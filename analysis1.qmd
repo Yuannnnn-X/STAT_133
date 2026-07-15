@@ -1,0 +1,126 @@
+---
+title: "Frequency Analysis"
+---
+
+```{r}
+#| include: false
+
+library(tidyverse)
+library(tidytext)
+library(plotly)
+
+hp <- read_csv("data/harry_potter_books.csv")
+
+data("stop_words")
+
+hp_words <- hp %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words)
+```
+
+
+## 1. Most Frequent Words Overall
+```{r}
+#| code-fold: true
+
+fa1 <- hp_words %>%
+  count(word, sort = TRUE) %>%
+  slice_head(n = 15) %>%
+  ggplot(aes(reorder(word, n), n)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Most Frequent Words in the Harry Potter Series",
+    x = NULL,
+    y = "Count"
+  )
+
+ggplotly(fa1)
+```
+
+**Note:** The most frequent words in the Harry Potter series are dominated by character names such as “harry”, “ron”, and “hermione”, as well as key figures like “dumbledore” and “hagrid”. This indicates that the narrative is highly character-driven, with a strong focus on interactions between central characters. 
+
+
+
+## 2. Most Frequent Words by Book
+```{r}
+#| code-fold: true
+
+fa2 <- hp_words %>%
+  count(book, word, sort = TRUE) %>%
+  group_by(book) %>%
+  slice_max(n, n = 10) %>%
+  ungroup() %>%
+  ggplot(aes(n, reorder(word, n))) +
+  geom_col() +
+  facet_wrap(~book, scales = "free") +
+  theme(strip.text = element_text(size = 10)) +
+  labs(
+    title = "Top Words by Book",
+    x = "Count",
+    y = NULL
+  )
+
+ggplotly(fa2)
+```
+
+**Note:** The most frequent words vary across books, reflecting shifts in narrative focus and character prominence. While “harry”, “ron”, and “hermione” consistently appear across all books, other words such as “lupin”, “moody”, “umbridge”, and “slughorn” emerge in specific books, indicating the introduction of new characters.
+
+
+## 3. Character Mentions Across Books
+```{r}
+#| code-fold: true
+
+keywords <- c("harry", "hermione", "ron", "voldemort")
+
+fa3 <- hp_words %>%
+  filter(word %in% keywords) %>%
+  count(book, word) %>%
+  ggplot(aes(book, n, fill = word)) +
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Character Mentions Across Books",
+    x = "Book",
+    y = "Count"
+  )
+
+ggplotly(fa3)
+```
+
+**Note:** This figure shows that “harry” is consistently the most mentioned character across all books, reinforcing his role as the central protagonist of the series. Mentions of “ron” and “hermione” also increase over time, reflecting their growing importance as key companions in Harry’s journey.
+
+
+## 4. Bigrams
+```{r}
+#| code-fold: true
+
+# create bigrams and remove stop words
+hp_bigrams <- hp %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+  separate(bigram, into = c("word1", "word2"), sep = " ") %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>%
+  filter(!is.na(word1), !is.na(word2)) %>%
+  unite(bigram, word1, word2, sep = " ")
+
+# count and plot
+fa4 <- hp_bigrams %>%
+  count(bigram, sort = TRUE) %>%
+  slice_head(n = 15) %>%
+  ggplot(aes(reorder(bigram, n), n)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Most Frequent Bigrams (After Removing Stop Words)",
+    x = NULL,
+    y = "Count"
+  )
+
+# make interactive
+ggplotly(fa4)
+```
+
+**Note:** After removing stop words, the most frequent bigrams reveal meaningful word combinations such as character interactions and key narrative phrases. These combinations provide more context than individual words, highlighting relationships between characters and important story elements.
+
+

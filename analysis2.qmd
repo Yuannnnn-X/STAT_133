@@ -1,0 +1,127 @@
+---
+title: "Sentiment Analysis"
+---
+
+```{r}
+#| include: false
+
+library(tidyverse)
+library(tidytext)
+library(plotly)
+
+hp <- read_csv("data/harry_potter_books.csv")
+
+data("stop_words")
+
+hp_words <- hp |>
+  unnest_tokens(word, text) |>
+  anti_join(stop_words)
+
+# load lexicons
+bing <- read_csv("data/bing.csv")
+nrc  <- read_csv("data/nrc.csv")
+```
+
+
+## 1. Sentiment Distribution
+
+```{r}
+#| code-fold: true
+
+sa1 <- hp_words |>
+  inner_join(bing, by = "word", relationship = "many-to-many") |>
+  count(sentiment) |>
+  ggplot(aes(sentiment, n, fill = sentiment)) +
+  geom_col() +
+  labs(
+    title = "Overall Sentiment Distribution",
+    x = "Sentiment",
+    y = "Count"
+  )
+
+ggplotly(sa1)
+```
+
+**Note:** The overall sentiment distribution shows that slightly more negative words than positive ones were counted‚ indicating that the Harry Potter series is largely about conflict‚ danger and loss․ Though friendship and hope are constant themes in the story‚ the sheer number of villains‚ threats and other negative associations give the series a more negative feel overall․
+
+## 2. Emotion Analysis
+
+```{r}
+#| code-fold: true
+
+sa3 <- hp_words |>
+  inner_join(nrc, by = "word", relationship = "many-to-many") |>
+  count(sentiment) |>
+  ggplot(aes(reorder(sentiment, n), n, fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Emotion Categories (NRC)",
+    x = "Emotion",
+    y = "Count"
+  )
+
+ggplotly(sa3)
+```
+
+**Note:** The emotion analysis reveals that several negative-related emotions such as sadness‚ anger and fear are common․ These are logical outcomes of the series‚ as these issues are commonly featured․ However‚ other frequently used words‚ such as trust and anticipation‚ suggest that friendship‚ loyalty‚ and hope are also common themes in the series․ This emotional balance prepares the audience for a series of events that‚ while navigating fear and loss‚ also explore themes of companionship and endurance between the main characters․
+
+## 3. Dictionary Comparison
+
+**Note:** The Bing and NRC lexicons produce different perspectives on sentiment because they are designed for different purposes. The Bing lexicon classifies words into simple positive and negative categories, providing an overall measure of sentiment polarity. In contrast, the NRC lexicon categorizes words into multiple emotional dimensions such as fear, joy, anger, and trust. As a result, Bing gives a more general overview of sentiment, while NRC reveals a more nuanced emotional structure. This explains why the two analyses highlight different aspects of the text’s tone.
+
+## 4. Sentiment Trajectory
+
+```{r}
+#| code-fold: true
+
+hp_sentiment <- hp_words |>
+  inner_join(bing, by = "word", relationship = "many-to-many") |>
+  mutate(value = ifelse(sentiment == "positive", 1, -1)) |>
+  group_by(book, chapter) |>
+  summarise(score = sum(value), .groups = "drop") |>
+  mutate(chapter = readr::parse_number(chapter))   
+
+sa2 <- ggplot(hp_sentiment, aes(chapter, score)) +
+  geom_line(color = "steelblue") +
+  facet_wrap(~book, scales = "free_x") +
+  labs(
+    title = "Sentiment Trajectory Across Chapters",
+    x = "Chapter",
+    y = "Net Sentiment Score"
+  )
+
+ggplotly(sa2)
+```
+
+**Note:** The sentiment trajectory illustrates each book's chapter-by-chapter emotional tone․ For most books‚ the negative baseline suggests the importance of conflict and tension in these books' plots and themes․ Yet not just this‚ these changes of pace are sometimes quite marked‚ suggesting some kind of resolution‚ relief or heightened drama․ Indeed the peaks and troughs are much greater in the later books‚ as events grow darker and more serious‚ which fits in with the trajectory of the series as the stakes become higher and the emotions more complicated․
+
+## 5. Contribution Analysis
+
+```{r}
+#| code-fold: true
+
+sa4 <- hp_words |>
+  inner_join(bing, by = "word", relationship = "many-to-many") |>
+  count(word, sentiment, sort = TRUE) |>
+  group_by(sentiment) |>
+  slice_max(n, n = 10) |>
+  ungroup() |>
+  ggplot(aes(n, reorder(word, n), fill = sentiment)) +
+  geom_col() +
+  facet_wrap(~sentiment, scales = "free") +
+  labs(
+    title = "Top Words Contributing to Sentiment",
+    x = "Count",
+    y = NULL
+  )
+
+ggplotly(sa4)
+```
+
+**Note:** The contribution analysis shows the words that are most responsible for the sentiment count‚ with negative contributions being dominated by the words "dark"‚ "death"‚ and "cold"‚ all of which relate to the most repeated themes of danger and death․ Furthermore‚ words like "magic"‚ "smile" and "wonder" are examples of positive words with a pointed effect․ Some words that seem misclassified may be due to the limitations of the sentiment lexicon‚ which is not exhaustive․ However‚ dictionary-based sentiment analysis has limitations‚ such as the case of the word "moody"‚ which has negative sentiment‚ but is also simply the name of a character in the source text․
+
+
+
+
+

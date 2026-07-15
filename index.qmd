@@ -1,0 +1,19 @@
+---
+title: "Introduction"
+---
+
+My name is Yuan Xie, and this website presents a text analysis project on the Harry Potter series for STAT 133 at UC Berkeley. This project explores the text of the Harry Potter books using data science techniques. The goal is to understand patterns in language, including word usage and emotional tone throughout the series.
+
+![Harry Potter](assets/Harry-Potter.png)
+
+
+This website includes two text analyses:
+
+> - **Frequency Analysis**: Identifying the most common words and patterns in the text
+> - **Sentiment Analysis**: Examining emotional tone and how it changes across the narrative
+
+
+Here are the links to the analyses or you can refer to the bar at the top of the webpage.
+
+- [Analysis 1: Frequency Analysis](analysis1.html)
+- [Analysis 2: Sentiment Analysis](analysis2.html)

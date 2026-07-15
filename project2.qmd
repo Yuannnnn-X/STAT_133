@@ -1,0 +1,371 @@
+---
+title: "Crash Data 2023"
+subtitle: "STAT 133 - Project 2"
+author: "Yuan Xie (3038930130)"
+format:
+  revealjs:
+    theme: simple
+    code-fold: true
+    slide-number: c
+    smaller: true
+    transition: fade
+    embed-resources: true
+    title-slide-attributes:
+      data-background-color: pink
+---
+
+# 2.1 Main content (about slide) {background-color="indigo" transition="fade" transition-speed="slow"}
+
+##  {background-color="indigo" transition="fade" transition-speed="slow"}
+This analysis project is about the crash data in California during 2023 from the Statewide Integrated Traffic Records System (SWITRS). The data set is collected and
+maintained by the California Highway Patrol (CHP).\
+
+We will examine:\
+
+:::{.incremental}
+- Overall crash statistics
+- Distribution and ranking tables
+- Crashes involving pedestrians and bicyclists
+- Exploratory research questions
+:::
+
+## Data Import and Briefly Show the Data Structure {background-color="indigo" transition="fade" transition-speed="slow"}
+```{r}
+#| echo: true
+library(tidyverse)
+# use this code chunk to import your data
+dat <- read_csv("crashes_2023.csv")
+head(dat)
+```
+
+# 2.2 Overall Statistics {background-color="cyan" transition="fade" transition-speed="slow"}
+
+## Total Number of Crashes, Injured Victims and Fatal Victims {background-color="cyan" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+overall_stats <- dat |>
+  summarise(
+    total_crashes = n(),
+    total_injured = sum(NUMBER_INJURED, na.rm = TRUE),
+    total_killed  = sum(NUMBER_KILLED, na.rm = TRUE)
+  )
+
+knitr::kable(overall_stats, caption = "Overall Statistics Data")
+```
+
+In 2023, there were **`r overall_stats$total_crashes`** crashes in California. These crashes resulted in **`r format(overall_stats$total_injured, scientific = FALSE)`** injured victims and  **`r overall_stats$total_killed`** fatal victims.
+
+# 2.3 Distribution Tables {background-color="aquamarine" transition="fade" transition-speed="slow"}
+
+## Counts and Percentages Per Month {background-color="aquamarine" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+month_dist <- dat |>
+  group_by(MONTH) |>
+  summarise(count = n()) |>
+  mutate(percent = round(count / sum(count) * 100, 2)) |>
+  arrange(MONTH)
+
+left  <- month_dist[1:6, ]
+right <- month_dist[7:12, ]
+```
+
+:::: columns
+
+::: column
+```{r}
+#| echo: true
+knitr::kable(left)
+```
+:::
+
+::: column
+```{r}
+#| echo: true
+knitr::kable(right)
+```
+:::
+
+::::
+
+## Counts and Percentages Per Day of Week {background-color="aquamarine" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+day_dist <- dat |>
+  group_by(DAY_OF_WEEK) |>
+  summarise(count = n()) |>
+  mutate(percent = round(count / sum(count) * 100, 2)) |>
+  arrange(DAY_OF_WEEK)
+knitr::kable(day_dist)
+```
+
+## Counts and Percentages Per Day of Hour {background-color="aquamarine" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+hour_dist <- dat |>
+  group_by(HOUR) |>
+  summarise(count = n()) |>
+  mutate(percent = round(count / sum(count) * 100, 2)) |>
+  arrange(HOUR)
+
+h1 <- hour_dist[1:6, ]
+h2 <- hour_dist[7:12, ]
+h3 <- hour_dist[13:18, ]
+h4 <- hour_dist[19:24, ]
+```
+
+See tables in the next slide.
+
+##  {background-color="aquamarine" transition="fade" transition-speed="slow"}
+
+::: {.smaller}
+
+:::: columns
+
+::: column
+```{r}
+knitr::kable(h1)
+```
+:::
+
+::: column
+```{r}
+knitr::kable(h2)
+```
+:::
+
+::: column
+```{r}
+knitr::kable(h3)
+```
+:::
+
+::: column
+```{r}
+knitr::kable(h4)
+```
+:::
+
+::::
+
+:::
+
+# 2.4 Ranking Tables {background-color="orange" transition="fade" transition-speed="slow"}
+
+##  Top-10 PCF Violations {background-color="orange" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top10_pcf <- dat |>
+  group_by(PCF_VIOL_CATEGORY) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:10)
+
+knitr::kable(top10_pcf)
+```
+
+##  Types of Collision Rank {background-color="orange" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+collision_rank <- dat |>
+  group_by(TYPE_OF_COLLISION) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
+
+knitr::kable(collision_rank)
+```
+
+## Top-8 Party At Fault {background-color="orange" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top8_fault <- dat |>
+  group_by(STWD_VEHTYPE_AT_FAULT) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:8)
+
+knitr::kable(top8_fault)
+```
+
+# 2.5 Crashes Involving Pedestrians {background-color="grey" transition="fade" transition-speed="slow"}
+
+## Number of Accidents Involving Pedestrians, Injured Pedestrians and Killed Pedestrians {background-color="grey" transition="fade" transition-speed="slow"}
+```{r}
+#| echo: true
+ped_accident <- dat |>
+  filter(PEDESTRIAN_ACCIDENT == "yes") |>
+  summarise(
+    total_ped_crashes = n(),
+    total_ped_injured = sum(COUNT_PED_INJURED, na.rm = TRUE),
+    total_ped_killed  = sum(COUNT_PED_KILLED, na.rm = TRUE)
+  )
+
+knitr::kable(ped_accident, caption = "Pedestrian Statistics Data")
+```
+
+There were **`r ped_accident$total_ped_crashes`** crashes involving pedestrians. The crashes resulted in **`r format(ped_accident$total_ped_injured, scientific = FALSE)`** injured pedestrians and **`r ped_accident$total_ped_killed`** pedestrian fatalities.
+
+##  Top-5 PCF Violations for Pedestrian Accidents {background-color="grey" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top5_pcf_ped <- dat |>
+  filter(PEDESTRIAN_ACCIDENT == "yes") |>
+  group_by(PCF_VIOL_CATEGORY) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:5)
+
+knitr::kable(top5_pcf_ped)
+```
+
+## Top-5 Types of Collision for Pedestrian Accidents {background-color="grey" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top5_collision_ped <- dat |>
+  filter(PEDESTRIAN_ACCIDENT == "yes") |>
+  group_by(TYPE_OF_COLLISION) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:5)
+
+knitr::kable(top5_collision_ped)
+```
+
+## Top-5 Party at Fault for Pedestrian Accidents {background-color="grey" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top5_fault_ped <- dat |>
+  filter(PEDESTRIAN_ACCIDENT == "yes") |>
+  group_by(STWD_VEHTYPE_AT_FAULT) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:5)
+
+knitr::kable(top5_fault_ped)
+```
+
+# 2.6 Crashes Involving Bicyclists {background-color="grey" transition="fade" transition-speed="slow"}
+
+## Number of Accidents Involving Bicyclists, Injured Bicyclists and Killed Bicyclists {background-color="grey" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+bic_accident <- dat |>
+   filter(BICYCLE_ACCIDENT == "yes") |>
+  summarise(
+    total_bic_crashes = n(),
+    total_bic_injured = sum(COUNT_BICYCLIST_INJURED, na.rm = TRUE),
+    total_bic_killed  = sum(COUNT_BICYCLIST_KILLED, na.rm = TRUE)
+  )
+
+knitr::kable(bic_accident, caption = "Bicyclist Statistics Data")
+```
+
+There were **`r bic_accident$total_bic_crashes`** crashes involving bicyclists. The crashes resulted in **`r format(bic_accident$total_bic_injured, scientific = FALSE)`** injured bicyclists and **`r bic_accident$total_bic_killed`** bicyclist fatalities.
+
+##  Top-5 PCF Violations for Bicyclist Accidents {background-color="grey" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top5_pcf_bic <- dat |>
+  filter(BICYCLE_ACCIDENT == "yes") |>
+  group_by(PCF_VIOL_CATEGORY) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:5)
+
+knitr::kable(top5_pcf_bic)
+```
+
+## Top-5 Types of Collision for Bicyclist Accidents {background-color="grey" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top5_collision_bic <- dat |>
+  filter(BICYCLE_ACCIDENT == "yes") |>
+  group_by(TYPE_OF_COLLISION) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:5)
+
+knitr::kable(top5_collision_bic)
+```
+
+## Top-5 Party at Fault for Bicyclist Accidents {background-color="grey" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+top5_fault_bic <- dat |>
+  filter(BICYCLE_ACCIDENT == "yes") |>
+  group_by(STWD_VEHTYPE_AT_FAULT) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) |>
+  slice(1:5)
+
+knitr::kable(top5_fault_bic)
+```
+
+# 2.7 Exploratory Research Question {background-color="violet" transition="fade" transition-speed="slow"}
+
+## Question: Is there a relationship between hour of the day and number of crashes? {background-color="violet" transition="fade" transition-speed="slow"}
+
+```{r}
+#| echo: true
+hour_summary <- dat |>
+  group_by(HOUR) |>
+  summarise(crashes = n())
+
+ggplot(hour_summary, aes(x = HOUR, y = crashes)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Number of Crashes by Hour of Day",
+    x = "Hour of Day",
+    y = "Number of Crashes"
+  )
+```
+
+## Answer {background-color="violet" transition="fade" transition-speed="slow"}
+
+Based on our data analysis and the bar chart plotted, it seems that there is some relationship between hour of the day and number of crashes. We can observe that:\
+
+:::{.incremental}
+- The number of crashes is the lowest during early morning hours, especially 3am and 4am.
+- There is an substantial increase in crashes during the morning commute, especially 7am and 8 am.
+- Most crashes happen in the late afternoon, around 4pm and 5pm.
+- The number of crashes decreases gradually after 6pm.
+:::
+
+# Thanks for your reading and patience! {background-color="beige" transition="fade" transition-speed="slow"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

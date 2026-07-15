@@ -1,0 +1,220 @@
+---
+title: "Crash Data in California"
+author: "Yuan Xie"
+format: dashboard
+server: shiny
+---
+
+```{r}
+#| context: setup
+library(tidyverse)
+library(plotly)
+library(ggiraph)
+library(leaflet)
+library(sf)
+library(rnaturalearth)
+library(RColorBrewer)
+
+crashes <- read_csv("crashes_geospatial_2019.csv") |>
+  mutate(
+    county = str_extract(LOCATION, "(?<=, ).*"),
+    crash_date = as.Date(DATETIME),
+    month_num = month(DATETIME),
+    hour = hour(DATETIME)
+  )
+```
+
+
+# {.sidebar}
+
+```{r}
+selectInput(
+  inputId = 'county', 
+  label = 'Choose a County:',
+  choices = unique(crashes$county),
+  selected = "ALAMEDA")
+```
+
+```{r}
+selectInput(
+  inputId = "vc",
+  label = "Violation Category:",
+  choices = unique(crashes$PCF_VIOL_CATEGORY),
+  selected = "DUI"
+)
+```
+
+```{r}
+checkboxGroupInput(
+  inputId = "collision_type",
+  label = "Select collision type:",
+  choices = unique(crashes$TYPE_OF_COLLISION),
+  selected = unique(crashes$TYPE_OF_COLLISION)
+)
+```
+
+
+```{r}
+radioButtons(
+  inputId = "severity",
+  label = "Show by Severity?",
+  choices = c("yes", "no"),
+  selected = "yes"
+)
+```
+
+```{r}
+dateRangeInput(
+  inputId = "date_range",
+  label = "Select date range:",
+  start = "2019-01-01",
+  end = "2019-12-31"
+)
+```
+
+```{r}
+selectInput(
+  inputId = "tile",
+  label = "Choose map style:",
+  choices = c(
+    "Light" = "CartoDB.Positron",
+    "Dark" = "CartoDB.DarkMatter",
+    "Street" = "OpenStreetMap",
+    "Terrain" = "Stamen.Terrain"
+  ),
+  selected = "CartoDB.Positron"
+)
+```
+
+# Map
+
+## Row
+
+```{r}
+#| title: "Crash Map"
+leafletOutput("map", height = 700)
+```
+
+# Trend
+## Row
+
+```{r}
+#| title: "Monthly Crash Trend in County"
+plotlyOutput("monthly_trend", height = 500)
+```
+
+
+```{r}
+#| context: server
+filtered_crashes <- reactive({
+  crashes |>
+    filter(
+      county == input$county,
+      PCF_VIOL_CATEGORY == input$vc,
+      TYPE_OF_COLLISION %in% input$collision_type,
+      crash_date >= as.Date(input$date_range[1]),
+      crash_date <= as.Date(input$date_range[2]),
+      !is.na(POINT_X),
+      !is.na(POINT_Y)
+    )
+})
+
+popup_text <- reactive({
+  df <- filtered_crashes()
+
+  paste0(
+    "<b>County:</b> ", df$county, "<br>",
+    "<b>Violation:</b> ", df$PCF_VIOL_CATEGORY, "<br>",
+    "<b>Collision:</b> ", df$TYPE_OF_COLLISION, "<br>",
+    "<b>Severity:</b> ", df$COLLISION_SEVERITY, "<br>",
+    "<b>Killed:</b> ", df$NUMBER_KILLED, "<br>",
+    "<b>Injured:</b> ", df$NUMBER_INJURED, "<br>",
+    "<b>Date:</b> ", df$crash_date
+  )
+})
+
+output$map <- renderLeaflet({
+  df <- filtered_crashes()
+
+  validate(
+    need(nrow(df) > 0, "No crashes match the selected filters.")
+  )
+
+  if (input$severity == "yes") {
+    pal <- colorFactor(
+      palette = "Set1",
+      domain = df$COLLISION_SEVERITY
+    )
+
+    leaflet(data = df) |>
+      addProviderTiles(input$tile) |>
+      addCircleMarkers(
+        lng = ~POINT_X,
+        lat = ~POINT_Y,
+        radius = 5,
+        color = ~pal(COLLISION_SEVERITY),
+        stroke = FALSE,
+        fillOpacity = 0.7,
+        popup = popup_text()
+      ) |>
+      addLegend(
+        position = "bottomright",
+        pal = pal,
+        values = ~COLLISION_SEVERITY,
+        title = "Collision Severity"
+      )
+  } else {
+    leaflet(data = df) |>
+      addProviderTiles(input$tile) |>
+      addCircleMarkers(
+        lng = ~POINT_X,
+        lat = ~POINT_Y,
+        radius = 5,
+        color = "blue",
+        stroke = FALSE,
+        fillOpacity = 0.7,
+        popup = popup_text()
+      )
+  }
+})
+
+monthly_summary <- reactive({
+  filtered_crashes() |>
+    count(month_num) |>
+    complete(month_num = 1:12, fill = list(n = 0)) |>
+    mutate(month_label = month.abb[month_num])
+})
+
+output$monthly_trend <- renderPlotly({
+  df <- monthly_summary()
+
+  p <- ggplot(
+    df,
+    aes(
+      x = month_num,
+      y = n,
+      group = 1,
+      text = paste0(
+        "Month: ", month_label,
+        "<br>Crashes: ", n
+      )
+    )
+  ) +
+    geom_line() +
+    geom_point() +
+    scale_x_continuous(
+      breaks = 1:12,
+      labels = month.abb
+    ) +
+    labs(
+      x = "Month",
+      y = "Number of Crashes",
+      title = "Crashes by Month"
+    ) +
+    theme_minimal()
+
+  ggplotly(p, tooltip = "text")
+})
+```
+
+

@@ -1,0 +1,262 @@
+---
+title: "Project 1"
+author: "Yuan Xie"
+format: "html"
+embed-resources: True
+---
+
+# 1 Dogs Data\
+## 1.1 Image of dogs\
+Search for an image of dogs and include it (i.e. insert it) in your document.\
+![figure](dogs.jpg)
+\
+
+## 1.2 Vectors\
+Consider the following data about 10 dog breeds\
+![figure](data.jpg)
+Create vectors and factors for the columns in the data table displayed above, according to the following data types. Encode missing values as ```NA```. BTW: You **cannot** use any of the explicit coercion functions: e.g. ```as.integer()```, ```as.logical()```, etc.\
+
+- ```breed```: character vector\
+- ```avg_life```: integer vector (expectancy life in years)\
+- ```energy```: factor (energy level); hint: ```factor()``` is your friend\
+- ```trainability```: double or real vector (trainability level)\
+- ```friendly```: logical vector (tends to be very friendly)\
+
+```{r}
+# breed: character vector
+breed <- c("Beagle", "Bulldog", "Collie", "German Shepherd",
+           "Golden Retriever", "Greyhound", "Labrador Retriever",
+           "Pomeranian", "Pug", "Shiba Inu")
+breed
+
+# avg_life: integer vector
+avg_life <- c(12L, 9L, 13L, 9L, 11L, 12L, 11L, 14L, 14L, 15L)
+avg_life
+
+# energy: factor
+energy <- factor(c("high", "medium", "medium", "medium", "very high",
+                   "high", "very high", "medium", "medium", "medium"))
+energy
+
+# trainability: double (real) vector
+trainability <- c(0.6, 0.6, 0.8, 1.0, 1.0, NA, 1.0, 0.6, 0.6, 0.4)
+trainability
+
+# friendly: logical vector
+friendly <- c(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE)
+friendly
+```
+
+## 1.3 Subscripting (aka Indexing, Slicing)\
+Use **bracket** notation to write R commands—displaying the output—that answer the following questions. Answer each part in its individual code chunk.\
+\
+a) What is the breed with the longest average life expectancy diameter? Hint: the function ```which.max()``` is your friend.
+```{r}
+breed[which.max(avg_life)]
+```
+\
+b) How many breeds don’t tend to be very friendly? Hint: the function ```sum()``` is your friend.
+```{r}
+sum(friendly == FALSE)
+```
+\
+c) What is the median trainability value of those breeds that are friendly?
+```{r}
+median(trainability[friendly == TRUE], na.rm = TRUE)
+```
+\
+d) How many breeds have average life expectancy values smaller than the median average life expectancy?
+```{r}
+sum(avg_life < median(avg_life))
+```
+\
+e) How many breeds have medium energy level and tend to be very friendly?
+```{r}
+sum(energy == "medium" & friendly == TRUE)
+```
+\
+f) What breeds have medium energy level and tend to be very friendly?
+```{r}
+breed[energy == "medium" & friendly == TRUE]
+```
+\
+g) What is the minimum trainability value for those breeds with an average lifetime of 13 years or more? Hint: Pay attention to ```NA``` values.
+```{r}
+min(trainability[avg_life >= 13], na.rm = TRUE)
+```
+\
+
+# 2 Vectorized Functions\
+For each function or operator listed below, state whether the function/operator is vectorized and provide a code example to support your claim.\
+
+1. ```length()```: False. It just returns the length of a vector, which is a single value. It does not calculate each element one by one.
+```{r}
+x <- c(1, 2, 3, 4)
+length(x)
+```
+
+2. ```*```: True. It multiplies each element of a vector by another vector or a scalar.
+```{r}
+x <- c(1, 2, 3, 4)
+x * 2
+```
+
+3. ```log()```: True. It applies the logarithmic function to each element of the vector.
+```{r}
+x <- c(1, 2, 3, 4)
+log(x)
+```
+
+4. ```max()```: False. It changes the vector to the single largest value rather than operating element-wise.
+```{r}
+x <- c(1, 2, 3, 4)
+max(x)
+```
+
+5. ```trunc()```: True. This function actually rounds each number towards zero one by one.
+```{r}
+x <- c(1.1, 2.6, 3.2, 4.8)
+trunc(x)
+```
+\
+
+# 3 Loan Amortization Payment Formula\
+Consider the following formula for computing the periodic payment (PMT) of a loan amortization:、
+$$
+\begin{equation}
+\text{PMT} = P \times 
+\frac{\frac{r}{k}\left(1 + \frac{r}{k}\right)^{nk}}
+{\left(1 + \frac{r}{k}\right)^{nk} - 1}
+\end{equation}
+$$
+where:\
+- P = principal (loan amount)\
+- PMT = periodic payment (typically monthly)\
+- $r$ = interest rate\
+- $n$ = number of years\
+- $k$ = number of periodic payments (typically 12: monthly)\
+\
+**What it is**: when $k$ = 12, this formula gives you the monthly payment of a loan amortization.\
+**How to use it**: calculate the fixed periodic—usually monthly—payment of a loan.\
+**Best for**: Amortization is used in personal loan, home loan (mortgage), auto loan, student loan repayment schedule preparation.\
+
+## 3.1 Computing Payment\
+Write R code to answer the following question.\
+\
+Suppose that one of your friends recently graduated from a College in California with $45,000 in student loan debt, at an interest rate of 5.25%. What would be the monthly payment if your friend wants to pay-off their student loan in 20 years?
+```{r}
+# input the data
+P <- 45000
+r <- 0.0525
+n <- 20
+k <- 12
+
+# plug these data into the function provided
+PMT <- P * ( (r / k) * (1 + r / k)^(n * k) ) /
+              ( (1 + r / k)^(n * k) - 1 )
+
+PMT
+```
+**Interpretation**: The monthly payment should be 303.2299 dollars.\
+
+## 3.2 Computing Years\
+Write R code to answer the following question.\
+\
+Your friend has various monthly payments to make such as rent, car loan, cell-phone, internet, streaming services, etc. With so many things to pay for, your friend is thinking of making monthly payments of \$220 to pay for their student loan. How many years would it take your friend to be student-loan debt free if they plan to make monthly payments of \$220? _Hint_: use a trial-and-error process for various values of $n$ to find the answer.
+```{r}
+# input the data
+P <- 45000
+r <- 0.0525
+k <- 12
+expected_PMT <- 220
+
+n_vals <- seq(10, 60, by = 0.1)
+
+# calculate all the corresponding PMT values
+PMT_vals <- P * ( (r / k) * (1 + r / k)^(n_vals * k) ) /
+                  ( (1 + r / k)^(n_vals * k) - 1 )
+# find the number of year with the smallest difference
+n_vals[which.min(abs(PMT_vals - expected_PMT))]
+```
+**Interpretation**: It will take 43 years.\
+
+# 4 Future Value of Ordinary Annuity\
+Mrs. Savingswood wants to save money for the college education of her 3 year-old daughter. She plans to deposit \$100 at the end of each month, for the next 15 years, into a mutual fund that gives—on average—a 10% annual rate of return. How much money will Mrs. Savingswood have at the end of 15 years?\
+\
+We can answer this question with the Future Value of an Ordinary Annuity formula:\
+$$
+\text{FV ordinary annuity} \;\longrightarrow\;
+\text{FV} = \text{PMT} \times 
+\frac{\left(1 + \frac{r}{k}\right)^{nk} - 1}{r/k}
+$$
+where:\
+- FV = future value (amount accumulated)\
+- PMT = periodic contribution made at the end of each period\
+- $r$ = annual interest rate (i.e. annual rate of return)\
+- $n$ = number of years\
+- $k$ = number of compounding periods per year; e.g. yearly ($k$ = 1), twice yearly ($k$ = 2), quarterly ($k$ = 4) and monthly ($k$ = 12).\
+\
+Notice that if $r$ = 0 then:
+$$ \text{FV} = \text{PMT} \times nk$$
+
+## 4.1 Function ```annuity()```\
+- Based on the formula from equation 2, write a function ```annuity()```, that allows you to compute the **future value of an ordinary annuity**.\
+- Make sure your function works with $r$ = 0\
+- Give descriptive names to the arguments of the function.\
+- Likewise, give default values to the arguments.\
+- Don’t forget to include comments to document the arguments of the function.\
+```{r}
+# set the function with default parameters
+annuity <- function(payment = 100,
+                    annual_rate = 0.05,
+                    years = 10,
+                    periods_per_year = 12) {
+
+  # total number of payments
+  ## nk
+  n_periods <- years * periods_per_year 
+  
+  # handle the case where interest rate is zero
+  if (annual_rate == 0) {
+    ## FV = PMT * nk
+    FV <- payment * n_periods 
+  } else {
+    ## r/k
+    rate_per_period <- annual_rate / periods_per_year
+    ## plug into the whole formula
+    FV <- payment * ((1 + rate_per_period)^n_periods - 1) / rate_per_period
+  }
+  
+  return(FV)
+}
+```
+
+## 4.2  Using ```annuity()```\
+Use your function ```annuity()``` to find how much money Mrs. Savingswood will have at the end of 15 years.
+```{r}
+# just plugging the parameters into the defined function
+annuity(payment = 100,
+         annual_rate = 0.10,
+         years = 15,
+         periods_per_year = 12)
+```
+**Interpretation**: Mrs. Savingswood will have 41447.03 dollars.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

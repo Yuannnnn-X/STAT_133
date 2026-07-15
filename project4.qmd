@@ -1,0 +1,270 @@
+---
+title: "Project4: Crash Data"
+author: "Yuan Xie"
+format: 
+  dashboard:
+    theme: desert
+embed-resources: true
+---
+
+```{r}
+# load packages and/or import data set(s)
+library(tidyverse)
+library(plotly)
+alpha <- read_csv("bicyclist_alpha_2014_2023.csv")
+beta <- read_csv("bicyclist_beta_2014_2023.csv")
+```
+
+```{r}
+# add the columns
+alpha <- alpha %>%
+  mutate(
+    YEAR = year(COLLISION_DATE),
+    MONTH = month(COLLISION_DATE),
+    DAY_OF_WEEK = wday(COLLISION_DATE, label = TRUE),
+    DAY_OF_WEEK = factor(
+      DAY_OF_WEEK,
+      levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    ),
+    HOUR = case_when(
+      COLLISION_TIME >= 2300 ~ 23,
+      COLLISION_TIME >= 2200 ~ 22,
+      COLLISION_TIME >= 2100 ~ 21,
+      COLLISION_TIME >= 2000 ~ 20,
+      COLLISION_TIME >= 1900 ~ 19,
+      COLLISION_TIME >= 1800 ~ 18,
+      COLLISION_TIME >= 1700 ~ 17,
+      COLLISION_TIME >= 1600 ~ 16,
+      COLLISION_TIME >= 1500 ~ 15,
+      COLLISION_TIME >= 1400 ~ 14,
+      COLLISION_TIME >= 1300 ~ 13,
+      COLLISION_TIME >= 1200 ~ 12,
+      COLLISION_TIME >= 1100 ~ 11,
+      COLLISION_TIME >= 1000 ~ 10,
+      COLLISION_TIME >= 900 ~ 9,
+      COLLISION_TIME >= 800 ~ 8,
+      COLLISION_TIME >= 700 ~ 7,
+      COLLISION_TIME >= 600 ~ 6,
+      COLLISION_TIME >= 500 ~ 5,
+      COLLISION_TIME >= 400 ~ 4,
+      COLLISION_TIME >= 300 ~ 3,
+      COLLISION_TIME >= 200 ~ 2,
+      COLLISION_TIME >= 100 ~ 1,
+      COLLISION_TIME >= 0 ~ 0
+    )
+  )
+```
+
+```{r}
+# join the data
+data <- left_join(alpha, beta, by = "CASE_ID")
+```
+
+
+# Long-term Trends
+
+## Row
+
+### Column
+```{r}
+#| content: valuebox
+#| title: "Total Collisions"
+#| icon: "bicycle"
+#| color: "orange"
+
+total_collisions <- nrow(data)
+total_collisions
+```
+
+### Column
+```{r}
+#| content: valuebox
+#| title: "Total Bicyclists Killed"
+#| icon: "exclamation-triangle"
+#| color: "danger"
+
+total_killed <- sum(data$COUNT_BICYCLIST_KILLED, na.rm = TRUE)
+total_killed
+```
+
+
+## Row
+
+### Column
+
+```{r}
+#| title: Graph of Year vs. Number of Total Collisions
+#| fig-height: 8
+
+data %>%
+  count(YEAR) %>%
+  ggplot(aes(x = YEAR, y = n)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Trend of Overall Bicycle Collisions",
+    x = "Year",
+    y = "Number of Total Collisions"
+  ) -> p
+
+ggplotly(p)
+```
+
+### Column
+
+```{r}
+#| title: Graph of Year vs. Number of Killed Bicyclists
+#| fig-height: 8
+
+data %>%
+  group_by(YEAR) %>%
+  summarise(killed = sum(COUNT_BICYCLIST_KILLED, na.rm = TRUE)) %>%
+  ggplot(aes(x = YEAR, y = killed)) +
+  geom_line(linewidth = 1, color = "red") +
+  geom_point(size = 2, color = "red") +
+  labs(
+    title = "Trend of Killed Bicyclists (2014–2023)",
+    x = "Year",
+    y = "Number of Killed Bicyclists"
+  ) +
+  theme_minimal() -> p
+
+ggplotly(p)
+```
+
+### Column
+
+```{r}
+#| title: Graph of Ratio of Killed to Injured Bicyclists during 2014–2023
+#| fig-height: 8
+
+data %>%
+  group_by(YEAR) %>%
+  summarise(
+    killed = sum(COUNT_BICYCLIST_KILLED, na.rm = TRUE),
+    injured = sum(COUNT_BICYCLIST_INJURED, na.rm = TRUE)
+  ) %>%
+  mutate(
+    ratio = ifelse(injured == 0, NA, killed / injured)
+  ) %>%
+  ggplot(aes(x = YEAR, y = ratio)) +
+  geom_line(linewidth = 1, color = "blue") +
+  geom_point(size = 2, color = "blue") +
+  labs(
+    title = "Ratio of Killed to Injured Bicyclists (2014–2023)",
+    x = "Year",
+    y = "Killed / Injured"
+  ) +
+  theme_minimal() -> p
+
+ggplotly(p)
+```
+
+
+# The "Rush Hour" Effect
+
+## Row
+
+### Column
+
+```{r}
+#| title: Graph of Distribution of Total Bicycle Collisions by Hour
+
+data %>%
+  count(HOUR) %>%
+  ggplot(aes(x = HOUR, y = n)) +
+  geom_col(fill = "orange") +
+  labs(
+    title = "Distribution of Bicycle Collisions by Hour",
+    x = "Hour of Day",
+    y = "Number of Collisions"
+  ) +
+  theme_minimal() -> p
+
+ggplotly(p)
+```
+
+### Column
+
+```{r}
+#| title: Graph of Distribution of Killed vs Injured Bicyclists by Hour
+
+data %>%
+  group_by(HOUR) %>%
+  summarise(
+    killed = sum(COUNT_BICYCLIST_KILLED, na.rm = TRUE),
+    injured = sum(COUNT_BICYCLIST_INJURED, na.rm = TRUE)
+  ) %>%
+  pivot_longer(cols = c(killed, injured),
+               names_to = "type",
+               values_to = "count") %>%
+  ggplot(aes(x = HOUR, y = count)) +
+  geom_col(fill = "steelblue") +
+  facet_wrap(~ type, scales = "free_y") +
+  labs(
+    title = "Killed vs Injured Bicyclists by Hour",
+    x = "Hour of Day",
+    y = "Count"
+  ) +
+  theme_minimal() -> p
+
+ggplotly(p)
+```
+
+## Row
+### Column
+
+```{r}
+#| title: Graph of Distribution of Killed vs Injured Bicyclists by Hour
+
+hour_table <- data %>%
+  group_by(HOUR) %>%
+  summarise(
+    total_collisions = n(),
+    total_killed = sum(COUNT_BICYCLIST_KILLED, na.rm = TRUE),
+    total_injured = sum(COUNT_BICYCLIST_INJURED, na.rm = TRUE)
+  ) %>%
+  arrange(HOUR)
+
+knitr::kable(hour_table)
+```
+
+# Comments on the two tabs
+
+## Row
+### Column
+
+::: {.callout-note}
+## Comment on 'Long-term Trends'
+
+According to these three charts, the total number of bicycle collision accidents has generally shown a downward trend, especially after 2018. However, the number of cyclists who died each year fluctuated and did not show a consistent trend. From 2014 to 2020, the number of deaths was relatively stable, usually between 150 and 180 cases per year. A significant peak occurred in 2022, with the number of deaths reaching the highest level, indicating a temporary increase in severe collision accidents. In contrast, there was a sharp decline in 2023. This decline should be interpreted with caution as it may reflect incomplete data rather than a genuine improvement in safety conditions. From 2014 to 2022, the ratio of cyclists who died to those who were injured generally increased, suggesting that the severity of collision accidents gradually worsened. The sharp decline in 2023 may again be affected by incomplete data. Overall, although the frequency of collision accidents seems to be decreasing, the severity of the accidents has not improved to the same extent, which may indicate that the safety of cyclists remains a concern.
+:::
+
+## Row
+### Column
+
+::: {.callout-note}
+## Comment on 'The "Rush Hour" Effect'
+
+According to these two charts, it can be seen that bicycle accidents were not evenly distributed throughout the day. Instead, there were distinct rush periods, indicating a clear "rush hour" effect. The number of accidents began to increase in the early morning and reached a significant peak between 7 and 9 in the morning, which was likely corresponding to the morning commuting period. The second more significant peak occurred in the evening and late afternoon (approximately 4 to 6 p.m.), when people returned from work or school. When comparing injured and deceased cyclists, both followed a similar hourly pattern, although the number of injured cyclists was significantly higher. This indicates that although accidents were more frequent during rush hours, the relative severity of the accidents did not significantly change depending on the time of day. Overall, these observed patterns provide strong evidence for the "rush hour" effect in bicycle accidents, which is driven by increased traffic flow and commuting activities.
+:::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

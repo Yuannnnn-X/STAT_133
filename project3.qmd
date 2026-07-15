@@ -1,0 +1,167 @@
+---
+title: "Project 3"
+author: "Yuan Xie (3038930130)"
+format: 
+  closeread-html:
+    theme: cosmo
+    cr-style:
+      section-background-color: white
+      narrative-background-color-sidebar: black
+      narrative-text-color-sidebar: white
+      narrative-font-size: 2em
+embed-resources: true
+---
+
+```{r setup, include=FALSE}
+# load packages and/or import data set(s)
+library(tidyverse)
+nba <- read_csv("nba2025-clean.csv")
+```
+
+:::: {.cr-section}
+
+The main goal in this project is to craft a story around salaries of NBA players and payrolls of NBA teams in season 2024-2025.
+
+@cr-a1
+
+1) We are going to draw one graph to visualize the salary distribution of all players. We divide the salary by 1000000 to make the graph look easier.
+
+::: {#cr-a1}
+
+```{r}
+ggplot(nba, aes(x = salary/1000000)) +
+  geom_histogram(bins = 30, fill = "orange", color = "white") +
+  labs(
+    title = "Distribution of NBA Player Salaries (2025)",
+    x = "Salary (USD)",
+    y = "Number of Players"
+  ) + 
+  theme_minimal()
+```
+
+:::
+
+[@cr-a1]
+
+@cr-b1
+
+2) This is the table with summary statistics of salaries among all players.
+
+::: {#cr-b1}
+
+```{r}
+salary_summary <- summary(nba$salary)
+
+knitr::kable(
+  data.frame(
+    Statistic = names(salary_summary),
+    Value = as.numeric(salary_summary)
+  )
+)
+```
+
+:::
+
+[@cr-b1]{pan-to="-100px, 0px"}
+
+@cr-c1
+
+3) This is a table showing  the top-10 highest-paid players (name, team, position, salary).
+
+::: {#cr-c1}
+
+```{r}
+c1 <- nba |>
+  arrange(desc(salary)) |>
+  slice(1 : 10) |>
+  select(player, team, position, salary)
+knitr::kable(c1)
+```
+
+:::
+
+[@cr-c1]{scale-by="2"}
+
+@cr-d1
+
+4) This is a graph that explores the relationship between salary and experience. Since the slope is positive, there may be a positive relationship between salary and experience.
+
+:::{#cr-d1}
+
+```{r}
+nba |>
+  ggplot(aes(x = experience, y = salary/1000000)) +
+  geom_point(alpha = 0.6, aes(color = position)) +
+  geom_smooth(method = "lm", formula = y ~ x, se = TRUE, color = "red") +
+  labs(
+    title = "Relationship Between Player Experience and Salary",
+    x = "Years of Experience",
+    y = "Salary (Million USD)"
+  ) +
+  theme_minimal()
+```
+
+:::
+
+[@cr-d1]{pan-to="0px, 100px"}
+
+@cr-e1
+
+5) This is a graph that ranks the teams by salaries.
+
+:::{#cr-e1}
+
+```{r}
+nba_team_salary <- nba |>
+  group_by(team) |>
+  summarise(payroll = sum(salary, na.rm = TRUE))
+
+nba_team_salary |>
+  ggplot(aes(x = reorder(team, payroll), y = payroll/1000000)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "NBA Team Payroll Rankings",
+    x = "Team",
+    y = "Total Payroll (Million USD)"
+  ) +
+  theme_minimal()
+```
+
+:::
+
+[@cr-e1]{pan-to="0px, 100px"}
+
+@cr-f1
+
+6) My own exploratory analysis: Salary Distribution Across Player Positions
+
+:::{#cr-f1}
+
+```{r}
+nba |>
+  ggplot(aes(x = position, y = salary/1000000)) +
+  geom_boxplot(fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Salary Distribution Across Player Positions",
+    x = "Position",
+    y = "Salary (Million USD)"
+  ) +
+  theme_minimal()
+```
+
+:::
+
+Observation: PG has the greatest salary spread while the rest four positions have outliers. However, the median salary is relatively similar across positions.
+
+[@cr-f1]
+
+::::
+
+
+
+
+
+
+
+

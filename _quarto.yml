@@ -1,0 +1,24 @@
+project:
+  type: website
+
+website:
+  favicon: assets/favicon.ico
+  title: "Project6: Harry Potter Text Analysis"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: analysis1.qmd
+        text: Frequency Analysis
+      - href: analysis2.qmd
+        text: Sentiment Analysis
+
+format:
+  html:
+    theme:
+      - journal
+    css: styles.css
+    toc: true
+
+
+
