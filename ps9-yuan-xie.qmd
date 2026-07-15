@@ -1,0 +1,128 @@
+---
+title: "Savings-Investment Calulator"
+author: "Yuan Xie"
+format: dashboard
+server: shiny
+---
+
+```{r}
+#| context: setup
+library(tidyverse)
+library(plotly)
+
+# Optional: you may use this section to write auxiliary functions
+
+```
+
+##  {.sidebar}
+
+```{r}
+# input widget for initial amount
+numericInput(
+  inputId = "P",
+  label = "Initial Investment ($)",
+  value = 5000
+)
+```
+
+```{r}
+# input widget for periodic contributions
+numericInput(
+  inputId = "PMT",
+  label = "Annual Contribution ($)",
+  value = 1000
+)
+```
+
+```{r}
+# input widget for number of years
+sliderInput(
+  inputId = "n",
+  label = "Number of Years",
+  min = 1,
+  max = 50,
+  value = 20
+)
+```
+
+```{r}
+# input widget for rate of return
+numericInput(
+  inputId = "r",
+  label = "Rate of Return (e.g. 0.08)",
+  value = 0.08
+)
+```
+
+# Timeline
+
+```{r}
+plotlyOutput(outputId = 'plot')
+```
+
+# Table
+
+```{r}
+tableOutput(outputId = 'table')
+```
+
+```{r}
+#| context: server
+
+# ------------------------------------------------------------
+# Auxiliary table (note that this is a reactive object)
+# (adapt code to your own analysis)
+# ------------------------------------------------------------
+tbl = reactive({
+
+  P = input$P
+  PMT = input$PMT
+  n = input$n
+  r = input$r
+  
+  # initialize it
+  year = 0:n
+  amount = numeric(length = n + 1)
+  
+  amount[1] = P  # year 0
+  
+  # calculate year by year
+  for (t in 2:(n + 1)) {
+    amount[t] = amount[t-1] * (1 + r) + PMT
+  }
+  
+  tibble(
+    year = year,
+    amount = round(amount, 2)
+  )
+})
+
+
+# ------------------------------------------------------------
+# Plot (timeline)
+# (adapt code to make a timeline according to your analysis!!!)
+# ------------------------------------------------------------
+output$plot <- renderPlotly({
+  p <- ggplot(data = tbl(), aes(x = year, y = amount)) +
+    geom_area(fill = "#A1E3F588") +
+    geom_line() +
+    geom_point() +
+    scale_y_continuous(labels = scales::comma) +
+    labs(
+      title = "Investment Growth Over Time",
+      x = "Year",
+      y = "Amount ($)"
+    ) +
+    theme_minimal()
+  
+  ggplotly(p)
+})
+
+# ------------------------------------------------------------
+# Table
+# (adapt code to display appropriate table!!!)
+# ------------------------------------------------------------
+output$table <- renderTable({
+  tbl()
+})
+```
