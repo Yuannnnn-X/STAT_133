@@ -1,0 +1,130 @@
+---
+title: "2026_01_26"
+author: "Yuan Xie"
+format: "html"
+---
+
+**Create atomic vectors**
+
+```{r}
+### These are atomic vectors
+
+# character (chr)
+name <- "Leia"
+name
+is.character(name)
+# character (chr)
+gender <- "female"
+gender
+is.character(gender)
+
+# logical (lgl)
+force <- TRUE
+force
+is.logical(force)
+
+# double (dbl)
+height <- 1.50
+height
+is.double(height)
+# double (dbl)
+height_cm <- 150
+height_cm
+is.double(height_cm)
+
+# integer (int)
+# 150L, L here means integer
+height_cm2 <- 150L
+height_cm2
+is.integer(height_cm2)
+```
+
+**To create "larger" vectors we use the combine function c()**
+
+```{r}
+name <- c("Leia", "Luke", "Han")
+name
+typeof(name)
+length(name)
+
+gender <- c("female", "male", "male")
+gender
+typeof(gender)
+length(gender)
+
+height <- c(1.50, 1.70, 1.80)
+height
+typeof(height)
+length(height)
+
+force <- c(TRUE, TRUE, FALSE)
+force
+typeof(force)
+length(force)
+```
+
+Note:
+
+1.  Vectors can have length zero. **NULL** has a length of zero.
+2.  Vectors are ordered set of elements.
+3.  Atomic: elements of the same type.
+4.  Elements can have names.
+
+```{r}
+# Assign names
+names(height) <- name
+height
+```
+
+```{r}
+# Another way of assigning names
+weight_kg <- c("Leia" = 55, "Luke" = 75, "Han" = 85)
+weight_kg
+# It is the same without the quotation signs
+weight_kg2 <- c(Leia = 55, Luke = 75, Han = 85)
+weight_kg2
+```
+
+Note:
+
+1.  Vectors are atomic structures.
+2.  The values in a vector must be **ALL** of the same type. You **CANNOT** have a vector of different data types
+
+Special Values:
+
+1.  NA: not available (logical, int, dbl, chr)
+2.  NULL: Does not exist
+3.  NaN: not a number
+4.  Inf: infinity
+
+```{r}
+int <- c(1L, 3L, 5L, NA)
+int
+sqrt(-4)
+log(-2)
+5/0
+```
+
+**Use "\#" to make comments**
+
+```{r}
+# create a vector
+c("A", "C", "D") # a vector created
+```
+
+**typeof() and mode() functions**
+
+![figure](type_and_mode.JPG)
+
+```{r}
+typeof(name)
+mode(name)
+
+typeof(height)
+mode(height)
+```
+
+Note:
+
+1.  types: logical, integer, double, character
+2.  mode: integer and double are both called numeric

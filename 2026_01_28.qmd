@@ -1,0 +1,160 @@
+---
+title: "2026_01_28"
+author: "Yuan Xie"
+format: "html"
+---
+
+**Remark of vectors**  
+1. Ordered sets of elements.  
+2. Atomic: elements of the same type.  
+3. Have length().  
+4. Elements can be named: names().  
+5. Types: logical, integers, double, character; Modes: logical, numeric, character.  
+
+```{r}
+x <- c("a" = 2, "b" = 4)
+x
+```
+
+**Creating vectors**
+
+Functions to **initialize** "dummy" vectors.
+
+```{r}
+logi <- logical(length = 2)
+logi
+```
+Note: with **FALSE** default
+
+```{r}
+int <- integer(length = 3)
+int
+
+dbl <- double(length = 4)
+dbl
+```
+Note: with **0** default
+
+```{r}
+char <- character(length = 5)
+char
+```
+Note: with **""** default
+
+**Functions to create vectors**
+
+```{r}
+logi <- vector(mode = "logical", length = 2)
+logi
+int <- vector(mode = "integer", length = 3)
+int
+dbl <- vector(mode = "double", length = 4)
+dbl
+char <- vector(mode = "character", length = 5)
+char
+```
+
+**Numeric sequences with seq()**
+
+```{r}
+seq(from = 1, to = 5, by = 1)
+seq(from = 1, to = 10, by = 2)
+seq(from = 10, to = 1, by = -2)
+seq(from = 1, by = 2, length.out = 6)
+```
+
+**Numeric sequences with :**
+
+```{r}
+1:5
+1:10
+-3:3
+-3.5:3.5
+```
+
+**Replicates with rep()**
+
+```{r}
+rep(1, times = 3)
+rep(1:3, times = 2)
+rep(1:3, each = 2, times = 2)
+rep(1:3, each = 2, times = 2, length.out = 10)
+```
+
+```{r}
+########## Exercise
+y <- c(0, 1, 2)
+rep(y, times = y + 1)
+rep(y, times = 1:3)
+```
+
+**Some special cases**
+
+```{r}
+c(1, 2, 3) + c(2, 4, 8)
+c(1, 2, 3) + c(2, 4)
+c(1, "dog", TRUE)
+c(1, TRUE)
+c("dog", TRUE)
+```
+
+**Vectorization**  
+
+Vectorized: Operations and functions that can run on an entire vector at once.  
+```{r}
+dbl_vec <- c(1, 2.3, 4)
+
+# Logarithm function log()
+log(dbl_vec)
+
+sum(dbl_vec)
+```
+
+**Vector Recycling**  
+
+Vector Recycling: If a function requires a longer vector than provided, it will full the vector with the existing elements, in order
+```{r}
+c(2, 6, 1) ^ 2
+c(2, 6, 3) ^ c(2, 3)
+```
+
+**Coercion**  
+
+Implicit Coercion: Automatic change of data types to ensure atomic vectors.
+```{r}
+c(1, "dog", TRUE)
+```
+Changes follow a hierarchy: logical < integer < double < character  
+
+Explicit Coercion: R provides functions to explicitly coerce from one type to another.  
+as.logical(), as.integer(), as.double(), as.character()  
+```{r}
+as.double(c(TRUE, FALSE, FALSE, FALSE))
+```
+
+
+**Square Bracket Syntax**  
+
+```{r}
+x <- c(2, 4, 6)
+# By index
+x[2]
+```
+
+**Subsetting by Index**  
+
+```{r}
+char_vec <- c("bear", "owl", "squirrel")
+char_vec
+char_vec[2]
+```
+
+
+
+
+
+
+
+
+
+
