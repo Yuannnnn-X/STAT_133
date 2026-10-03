@@ -1,0 +1,121 @@
+---
+title: "2026_01_30"
+author: "Yuan Xie"
+format: "html"
+---
+
+## **Subsetting with vectors**  
+
+# Square bracket syntax
+```{r}
+vec <- c("a" = 1, "b" = 2, "c" = 3)
+# vec[indexing vector, numeric, char, logical]
+```
+
+```{r}
+char_vec <- c("bear", "owl", "squirrel")
+char_vec
+char_vec[2]
+char_vec[2:3]
+char_vec[-2]
+char_vec[-3:-2]
+```
+
+# Subset by name  
+```{r}
+char_vec2 <- c("oski" = "bear", "fiat" = "owl","lux" = "squirrel")
+char_vec2
+char_vec2["oski"]
+char_vec2[c("lux", "fiat")]
+```
+
+# Subset by logicals  
+```{r}
+char_vec2 <- c("oski" = "bear", "fiat" = "owl","lux" = "squirrel")
+char_vec2
+char_vec2[c(TRUE, FALSE, TRUE)]
+
+# You cannot type only one true. The length should be equal. Otherwise, recycling wll take place.
+char_vec2[TRUE]
+```
+
+# Exercise 1
+```{r}
+z <- c(latte = 2, boba = 4, matcha = 6)
+
+# Vector 1
+z[c(2, 1)]
+z[2:1]
+z[c("boba", "latte")]
+
+# Vector 2
+z[c(3, 3)]
+z[rep(3, times = 2)]
+z[c("matcha", "matcha")]
+```
+
+# Exercise 2
+```{r}
+x <- c(2, 4, 6)
+y <- c("a", "b", "c")
+
+y[x[-3][2]]
+y[x/x]
+y[as.logical(x)]
+```
+
+## Change in place syntax  
+```{r}
+z <- c(latte = 2, boba = 4, matcha = 6)
+z[c(TRUE, FALSE, TRUE)] <- 12
+z
+
+names(z)
+names(z) <- c("A", "B", "C")
+z
+```
+
+## Basic Unix  
+```{bash eval = FALSE}
+quarto render demo.qmd
+quarto preview demo.qmd
+quarto publish demo.qmd
+```
+
+# GUIs and CLIs
+Windows and Mac use a Graphical User Interface (GUI) for you to interact with the Operating System.  
+\
+About GUIs: (See slides)
+About CLIs: (See slides)
+\
+User -> Terminal -> Shell -> Operating System
+
+# Shell commands
+```{bash eval = FALSE}
+pwd
+ls
+cd
+mkdir
+```
+
+# Anatomy of Shell Commands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
