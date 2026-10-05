@@ -1,0 +1,161 @@
+---
+title: "2026_02_02"
+author: "Yuan Xie"
+format: "html"
+---
+
+## **Change in place syntax**  
+
+# Square bracket syntax
+```{r}
+z <- c(latte = 2, boba = 4, matcha = 6)
+z[c(TRUE, FALSE, TRUE)] <- 12
+z
+# Show the names of the vector
+names(z)
+# Change the names of the vector
+names(z) <- c("A", "B", "C")
+z
+```
+
+## **Matrix**  
+```{r}
+mat1 <- matrix(data = c(1, 2, 3, 4), nrow = 2, ncol = 2) ## column-major
+mat1
+typeof(mat1)
+```
+Note: defaults to fill the matrix by columns (byrow = FALSE)
+
+```{r}
+mat1 <- matrix(data = c(1, 2, 3, 4), nrow = 2, ncol = 2)
+mat1
+
+mat2 <- matrix(data = c(1, 2, 3, 4), nrow = 2)
+mat2
+
+mat3 <- matrix(data = c(1, 2, 3, 4), ncol = 2)
+mat3
+## row-major here
+mat4 <- matrix(data = c(1, 2, 3, 4), nrow = 2, byrow = TRUE)
+mat4
+mat5 <- matrix(data = c(1, 2, 3, 4), ncol = 2, byrow = TRUE)
+mat5
+```
+
+# Matrices as vectors
+```{r}
+vec <- 1:4
+vec
+dim(vec) <- c(2, 2)
+vec
+```
+Note: Matrices are simply vectors with dimensions dim(). All vector behavior still applies.
+
+# Questions
+```{r}
+matrix(c(1, 2, 3, 4), nrow = 2) *
+    matrix(c(1, 2, 3, 4), nrow = 2)
+
+matrix(c(1, 2, 3, 4), nrow = 2) %*%
+    matrix(c(1, 2, 3, 4), nrow = 2)
+
+matrix(data = c("iz", "buzz", "poppy"), nrow = 2)
+
+matrix(c(TRUE, 3L, 1.0, FALSE), nrow = 2)
+```
+
+```{r}
+m1 <- matrix(1:4, nrow = 2)
+m2 <- matrix(1:9, nrow = 3)
+# m1 * m2 will give you an error
+```
+
+## Matrix subsetting  
+
+# By index
+```{r}
+mat <- matrix(1:4, nrow = 2)
+mat
+mat[1, 2]
+
+mat2 <- matrix(1:9, nrow = 3)
+mat2
+mat2[1:2, 2:3]
+
+mat2 <- matrix(1:9, nrow = 3)
+mat2
+mat2[1, ]
+mat2[1, , drop = FALSE]
+mat2[-2, ]
+```
+Notes:  
+1. subsetting a matrix row creates a vector.\
+2. empty subsetting vectors > all entries.\
+
+# By names
+```{r}
+mat <- matrix(1:4, nrow = 2)
+rownames(mat) <- c("a", "b")
+colnames(mat) <- c("i", "ii")
+mat
+mat["a", "ii"]
+mat["a", ]
+mat[ ,"ii"]
+```
+
+# By logical
+```{r}
+mat <- matrix(1:4, nrow = 2)
+rownames(mat) <- c("a", "b")
+colnames(mat) <- c("i", "ii")
+mat[c(TRUE, FALSE), c(FALSE, TRUE)]
+mat["a", c(FALSE, TRUE)]
+```
+
+```{r}
+mat_log <- matrix(c(TRUE, FALSE, TRUE, FALSE), nrow = 2)
+mat[mat_log]
+```
+
+## **Matrices and Tables**
+```{r}
+Name <- c("Leia", "Luke", "Han")
+Height <- c(1.50, 1.70, 1.80)
+Force <- c(TRUE, TRUE, FALSE)
+
+M1 <- matrix(c(Name, Height, Force), nrow = 3)
+M1
+colnames(M1) <- c("Name", "Height", "Force")
+M1
+```
+
+```{r}
+Name <- c("Leia", "Luke", "Han")
+Height <- c(1.50, 1.70, 1.80)
+Force <- c(TRUE, TRUE, FALSE)
+
+M2 <- cbind(Name, Height, Force) # column-bind
+M2
+```
+
+```{r}
+leia <- c("Leia", 1.50, TRUE)
+luke <- c("Luke", 1.70, TRUE)
+han <- c("Leia", 1.80, FALSE)
+
+M3 <- rbind(leia, luke, han) # row-bind
+colnames(M3) <- c("Name", "Height", "Force")
+M3
+```
+
+
+
+
+
+
+
+
+
+
+
+
