@@ -1,0 +1,210 @@
+---
+title: "2026_02_06"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+## Choices  
+```{r}
+light <- "green"
+
+if (light == "green") {
+  saber <- "Jedi"
+} else {
+  saber <- "Sith"
+}
+
+saber
+```
+
+```{r}
+light <- "red"
+
+if (light == "green") {
+  saber <- "Jedi"
+} else {
+  saber <- "Sith"
+}
+
+saber
+```
+
+# General blueprint of if-else in R:  
+```{r eval = FALSE}
+if (condition) {
+  # what to do if condition is TRUE
+} else {
+  # what to do if condition is FALSE
+}
+```
+
+# If we only care about the if part:  
+```{r eval = FALSE}
+if (condition) {
+  # what to do if condition is TRUE
+}
+
+
+
+# It is the same as:
+if (condition) {
+  # what to do if condition is TRUE
+} else {
+  NULL
+}
+```
+
+# Nested if's
+```{r}
+light <- "purple"
+
+if (light == "green") {
+  saber <- "Jedi"
+} else if (light == "red") {
+  saber <- "Sith"
+} else {
+  saber <- "Dathomir"
+}
+
+saber
+```
+
+```{r}
+set.seed(133)
+place <- sample(1:3, size = 1)
+
+if (place == 1) {
+  medal <- "gold"
+} else if (place == 2) {
+  medal <- "silver"
+} else {
+  medal <- "bronze"
+}
+
+medal
+```
+
+
+
+```{r}
+set.seed(133)
+
+year <- sample(1:4, size = 1)
+if (year == 1){
+  name <- "Freshman"
+} else if (year == 2){
+  name <- "Sophomore"
+} else if (year == 3) {
+  name <- "junior"
+} else {
+  name <- "senior"
+}
+
+name
+```
+
+## Iterations  
+For loops; while loops; repeat loops  
+```{r eval = FALSE}
+for (item in vector) {
+  perform_action
+}
+```
+
+::: {.callout-important}
+## Important Note
+
+No i = i + 1 in R language.
+:::
+
+# Option 1  
+```{r}
+set.seed(133)
+green_red <- c("green", "red")
+lights <- sample(green_red, size = 3, replace = TRUE)
+lights
+
+sabers <- character(length = 3)
+sabers
+
+for (i in 1:length(lights)) {
+  if (lights[i] == "green") {
+    sabers[i] <- "Jedi"
+  } else {
+    sabers[i] <- "Sith"
+  }
+}
+
+sabers
+```
+
+# Option 2  
+```{r}
+set.seed(133)
+green_red <- c("green", "red")
+lights <- sample(green_red, size = 3, replace = TRUE)
+lights
+
+sabers <- rep("", 3)
+sabers
+
+for (i in 1:length(lights)) {
+  if (lights[i] == "green") {
+    sabers[i] <- "Jedi"
+  } else {
+    sabers[i] <- "Sith"
+  }
+}
+
+sabers
+```
+
+# Option 3
+```{r}
+set.seed(133)
+green_red <- c("green", "red")
+lights <- sample(green_red, size = 3, replace = TRUE)
+lights
+
+sabers <- rep("Sith", 3)
+sabers
+
+for (i in 1:length(lights)) {
+  if (lights[i] == "green") {
+    sabers[i] <- "Jedi"
+  }
+}
+
+sabers
+```
+
+# ifelse()
+```{r}
+set.seed(133)
+green_red <- c("green", "red")
+lights <- sample(green_red, size = 3, replace = TRUE)
+lights
+
+ifelse(lights == "green", yes = "Jedi", no = "Sith")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
