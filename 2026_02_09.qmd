@@ -1,0 +1,130 @@
+---
+title: "2026_02_09"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Functions
+```{r}
+expr <- {x <- 1
+         y <- 2
+         z <- c(x, y)}
+expr
+```
+
+```{r}
+# a and b: global objects
+a <- 10
+b <- 20
+
+hey <- function(){
+  # a and b: local objects
+  a <- 1
+  b <- 2
+  c(a, b)
+}
+
+hey() # execution, ephemeral
+```
+
+## Ex. colSums()
+```{r}
+mat <- matrix(1:4, nrow = 2)
+mat
+colSums(mat)
+```
+What if there is no colSums()?
+```{r}
+colsum_vec <- rep(0, ncol(mat))
+for (coln in 1:ncol(mat)) {
+  colsum_vec[coln] <- sum(mat[, coln])
+}
+
+colsum_vec
+```
+
+```{r}
+# celsius to fahrenheit
+# one or more arguments
+c2f <- function(celsius){
+  (9/5) * celsius + 32
+}
+
+c2f(0)
+c2f(1:10)
+c2f(c(2, 2, NA))
+```
+
+3 aspects: \
+1. arguments\
+2. body\
+3. creation environment\ (different from execution environment)
+
+```{r}
+a <- 2 # global
+yay <- function(){
+  b <- 1 # internal
+  c(a, b)
+}
+
+yay()
+```
+The environment within the function includes the environment “one level up”\
+Objects defined in the function environment mask those one level up\
+Best to encapsulate functions (not make them dependent on objects defined outside their environment / arguments)\
+
+```{r}
+roll_die <- function(){
+  sample(x = 1:6, size = 1)
+}
+```
+
+work for arbitrary n-sided dice, return more than 1 roll of the die
+```{r}
+roll_die <- function(n_sides = 6, n_rolls = 1){
+  sample(x = 1:n_sides, size = n_rolls, replace = TRUE)
+}
+```
+
+## stop() and warning()
+```{r}
+set.seed(133)
+
+roll_die <- function(n_sides = 6, n_rolls = 1){
+  if (n_sides <= 0){
+    stop("invalid value n-sides")
+  }
+  if (n_rolls <= 0){
+    stop("invalid value n-rolls")
+  }
+  sample(x = 1:n_sides, size = n_rolls, replace = TRUE)
+}
+
+roll_die(6, 10)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
