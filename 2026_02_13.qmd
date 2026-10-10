@@ -1,0 +1,215 @@
+---
+title: "2026_02_13"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: sandstone
+embed-resources: true
+---
+
+# Data Frames\
+```{r}
+star_wars <- data.frame(
+  name = c("Anakin", "Padme", "Luke", "Leia"),
+  gender = c("male", "female", "male", "female"),
+  height = c(1.88, 1.65, 1.70, 1.50),
+  weight = c(84, 45, 77, 49)
+)
+
+star_wars
+```
+
+```{r}
+attributes(star_wars)
+```
+
+## Subsetting Data Frames\
+1. as a two dimensional array:\
+- ```dat[row, col]```\
+- ```dat[row, ]```\
+- ```dat[ ,col]```\
+\
+2. as a one dimensional list:\
+- ```dat[]```\
+- ```dat[[]]```\
+- ```dat$```\
+
+# tibble
+```{r}
+library(tibble)
+star_wars_tbl <- as_tibble(star_wars)
+star_wars_tbl
+```
+
+# Data Warngling\
+Room for Improvement in Base R\
+```{r}
+wizards <- data.frame(
+  name = c("Harry", "Bellatrix", "Hermione", "Draco"),
+  house = c("Gryffindor", "Slytherin", "Gryffindor",  "Slytherin"),
+  height = c(1.78, 1.57, 1.65, 1.75),
+  spells = c(60, 75, 70, 55)
+)
+
+wizards
+```
+
+```{r}
+library(tidyverse)
+
+wizards$height
+wizards %>% select(height) %>% as.vector()
+
+wizards %>% filter(height < 1.70)
+
+wizards %>% mutate(height_inch = height * 12)
+
+wizards %>% filter(house == "Gryffindor") %>% summarise(avg_height = mean(height))
+```
+
+```{r}
+c("owl", "wolf", "fox", "owl") == "owl"
+"owl" == c("owl", "wolf", "fox", "owl")
+"owl" %in% c("owl", "wolf", "fox", "owl")
+c("owl", "wolf", "fox", "owl") %in% "owl"
+c("owl", "fox") %in% c("owl", "wolf", "fox", "owl")
+c("owl", "wolf", "fox", "owl") %in% c("owl", "fox")
+```
+## tidyverse with dplyr\
+Type ```install.package("tidyverse")``` to install the package in console\
+
+## dplyr verbs: ```slice()```; ```select()```; ```filter()```; ```mutate()```; ```arrange()```; ```count()```; ```summarize()```; ```group_by()```.
+
+```{r}
+wizards <- data.frame(
+  name = c("Harry", "Bellatrix", "Hermione", "Draco"),
+  house = c("Gryffindor", "Slytherin", "Gryffindor",  "Slytherin"),
+  height = c(1.78, 1.57, 1.65, 1.75),
+  spells = c(60, 75, 70, 55)
+)
+
+wizards
+```
+
+```{r}
+slice(wizards, 2)
+slice(wizards, 2:4)
+slice(wizards, -3)
+```
+
+```{r}
+select(wizards, house)
+select(wizards, 2)
+select(wizards, house, name)
+select(wizards, -spells)
+select(wizards, name:height)
+```
+
+```{r}
+filter(wizards, house == "Gryffindor")
+filter(wizards, spells < 60)
+filter(wizards, name %in% c("Harry", "Hermione"))
+filter(wizards, 
+       name %in% c("Harry", "Hermione"),
+       spells < 70)
+```
+
+```{r}
+mutate(wizards, name = toupper(name))
+mutate(wizards, height_cm = height * 100)
+```
+
+```{r}
+arrange(wizards, height)
+arrange(wizards, desc(height))
+arrange(wizards, house)
+arrange(wizards, house, height)
+```
+
+```{r}
+count(wizards, house)
+```
+
+```{r}
+summarize(wizards, 
+          mean(height))
+```
+
+```{r}
+summarize(wizards, 
+          avg_height = mean(height),
+          sd_height = sd(height))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
