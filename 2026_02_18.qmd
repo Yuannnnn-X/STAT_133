@@ -1,0 +1,144 @@
+---
+title: "2026_02_18"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Data Frames\
+```{r}
+library(tidyverse)
+
+wizards <- data.frame(
+  name = c("Harry", "Bellatrix", "Hermione", "Draco"),
+  house = c("Gryffindor", "Slytherin", "Gryffindor",  "Slytherin"),
+  height = c(1.78, 1.57, 1.65, 1.75),
+  spells = c(60, 75, 70, 55)
+)
+
+wizards
+```
+
+
+```{r}
+## Nesting
+summarize(filter(wizards, house == "Gryffindor"), mean(height))
+
+## Step-by-step
+wizards2 <- filter(wizards, house == "Gryffindor")
+summarize(wizards2, mean(height))
+```
+
+```{r}
+wizards |>
+  filter(house == "Gryffindor") |> 
+  summarize(mean(height))
+```
+
+## |> works everywhere\
+```{r}
+summary(factor(c("owl", "fox", "owl")))
+factor(c("owl", "fox", "owl")) |> summary()
+c("owl", "fox", "owl") |> factor() |> summary()
+```
+
+```{r}
+wizards |> # A #<<
+    filter(house == "Gryffindor",
+           name %in% c("Harry", "Hermione")) |> # B #<<
+    select(height, spells) |> # C #<<
+    summarize(mean(height), sd(height),
+              mean(spells), sd(spells)) # D #<<
+```
+
+## Grouped Operations\
+```{r}
+wizards |>
+  group_by(house) |> 
+  summarize(mean(height))
+
+wizards |>
+  group_by(house) |> 
+  filter(height == max(height))
+
+wizards |>
+  group_by(house) |> 
+  arrange(desc(height)) ## !!!arrange() ignores group_by() and is always global.
+
+wizards |>
+  group_by(house) |> 
+  mutate(height_z = (height - mean(height)) / sd(height))
+
+wizards |> 
+  group_by(house) |> 
+  mutate(height_z = (height - mean(height)) / sd(height)) |> 
+  summarize(mean(height_z))
+```
+
+## `ungroup()`
+```{r}
+wizards |> 
+  group_by(house) |> 
+  mutate(height_z = (height - mean(height)) / sd(height)) |> 
+  ungroup() |> 
+  summarize(mean(height_z))
+```
+
+## Shortcut: `.by`
+```{r}
+wizards |> 
+    summarize(mean(height), .by = house)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
