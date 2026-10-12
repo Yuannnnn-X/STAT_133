@@ -1,0 +1,96 @@
+---
+title: "2026_02_20"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Importing tables
+```{r}
+x <- scan(file = "file1.txt", what = numeric())
+x
+
+x_int <- scan(file = "file1.txt", what = integer())
+x_int
+
+x_dbl <- scan(file = "file1.txt", what = double())
+x_dbl
+
+x_chr <- scan(file = "file1.txt", what = character())
+x_chr
+```
+
+```{r}
+y <- scan(file = "file2.txt", what = numeric())
+y
+```
+
+```{r}
+z <- scan(file = "file3.txt", what = character())
+z
+
+z <- scan(file = "file3.txt", what = character(), sep = "\n")
+z
+```
+
+```{r}
+w <- scan(
+  file = "file4.txt", 
+  skip = 1,
+  what = list(
+    character(), 
+    character(), 
+    double()))
+w
+
+
+w <- scan(
+  file = "file4.txt", 
+  skip = 1,
+  what = list(
+    name = character(), 
+    gender = character(), 
+    height = double()))
+w
+```
+
+```{r}
+vals <- scan(file = "values.txt", what = numeric())
+vals
+
+mat <- matrix(vals, nrow = 4, ncol = 2, byrow = TRUE)
+mat
+
+vals <- scan(file = "values.txt", what = list(x=numeric(), y=numeric()))
+vals
+
+df <- data.frame(vals)
+df
+```
+
+# Read the slides for the rest parts!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
