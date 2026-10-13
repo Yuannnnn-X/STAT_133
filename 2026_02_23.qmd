@@ -1,0 +1,99 @@
+---
+title: "2026_02_23"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Data Visualization
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+penguins
+```
+
+```{r}
+penguins |>
+  select(bill_length_mm,
+         flipper_length_mm,
+         species)
+
+ggplot(
+  data = drop_na(penguins),
+  mapping = aes(
+    x = bill_length_mm, 
+    y = flipper_length_mm,
+    color = species,
+    shape = sex)) +
+  geom_point()
+```
+
+```{r}
+ggplot(
+  data = penguins, 
+  mapping = aes(
+    x = bill_length_mm,
+    y = flipper_length_mm,
+    color = species)) +
+  geom_point(na.rm = TRUE) +
+  theme_gray(base_size = 18)
+
+penguins |>
+  ggplot(aes(x = bill_length_mm,
+             y = flipper_length_mm,
+             color = species)) +
+  geom_point(na.rm = TRUE) +
+  theme_gray(base_size = 18)
+```
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point(na.rm = TRUE)
+
+
+ggplot(data = penguins,
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm)) +
+  geom_point(aes(color = species), na.rm = TRUE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
