@@ -1,0 +1,223 @@
+---
+title: "2026_02_25"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Data Visualization
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+penguins
+```
+
+
+```{r}
+# global mappings
+ggplot(data = drop_na(penguins),
+       aes(x = bill_length_mm, 
+           y = flipper_length_mm)) +
+  geom_point()
+
+# local mappings
+ggplot(data = drop_na(penguins)) +
+  geom_point(
+    aes(x = bill_length_mm, 
+        y = flipper_length_mm)) 
+```
+
+# global mappings
+```{r}
+ggplot(data = drop_na(penguins),
+       aes(x = bill_length_mm, 
+           y = flipper_length_mm)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x)
+
+ggplot(data = drop_na(penguins)) +
+  geom_point(aes(x = bill_length_mm, 
+                 y = flipper_length_mm))  +
+  geom_smooth(aes(x = bill_length_mm, 
+                  y = flipper_length_mm),
+              method = "lm", formula = y ~ x)
+
+
+model <- lm(flipper_length_mm ~ bill_length_mm,
+            data = drop_na(penguins))
+ggplot(data = drop_na(penguins),
+       aes(x = bill_length_mm, 
+           y = flipper_length_mm)) +
+  geom_point() +
+  geom_abline(intercept = coef(model)[1],
+              slope = coef(model)[2])
+```
+
+```{r}
+# global mappings
+ggplot(data = drop_na(penguins),
+       aes(x = bill_length_mm, 
+           y = flipper_length_mm,
+           color = species)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", formula = 'y ~ x')
+
+# global and local mappings
+ggplot(data = drop_na(penguins),
+       aes(x = bill_length_mm, 
+           y = flipper_length_mm)) +
+  geom_point(size=3, aes(color = species)) +
+  geom_smooth(method = "lm",
+              color = "black", formula = 'y ~ x')
+```
+
+```{r}
+# global mappings
+ggplot(data = drop_na(penguins),
+       aes(x = bill_length_mm, 
+           y = flipper_length_mm,
+           color = species)) +
+  geom_smooth(method = "lm", formula = 'y ~ x') +
+  geom_point(size = 3)
+
+# global and local mappings
+ggplot(data = drop_na(penguins),
+       aes(x = bill_length_mm, 
+           y = flipper_length_mm)) +
+  geom_smooth(method = "lm",
+              color = "black", formula = 'y ~ x') +
+  geom_point(size=3, aes(color = species))
+```
+
+## Labels with ```labs()```\
+```
+labs(
+  title = "...",
+  subtitle = "...",
+  x = "...",
+  y = "..."
+)
+```
+
+```{r}
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point() +
+  labs(
+    title = "Bill and flipper length",
+    subtitle = "Positive relation",
+    x = "Bill length (mm)",
+    y = "Flipper length (mm)")
+```
+
+## Facets
+```{r}
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, y = flipper_length_mm, color = species)) +
+  geom_point() +
+  facet_wrap(~ species)
+
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, y = flipper_length_mm, color = species)) +
+  geom_point() +
+  facet_wrap(~ species, nrow = 2)
+
+
+
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, y = flipper_length_mm, color = species)) +
+  geom_point() +
+  facet_grid(. ~ species)  # facet_grid(cols = vars(species))
+
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, y = flipper_length_mm, color = species)) +
+  geom_point() +
+  facet_grid(species ~ .)  # facet_grid(rows = vars(species))
+
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, y = flipper_length_mm, color = species)) +
+  geom_point() +
+  facet_grid(species ~ island)
+```
+
+## Theme
+```{r}
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point() +
+  theme_classic()
+```
+
+
+## Scale
+```{r}
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point(size = 3) +
+  scale_x_continuous(limits = c(0, 60)) +
+  scale_y_continuous(limits = c(160, 240))
+
+ggplot(data = drop_na(penguins),
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point(size = 3) +
+  scale_color_manual(
+    values = c("orange", "magenta", "turquoise"))
+
+
+```
+
+## Bonus
+```{r}
+big_males <- penguins |> 
+  filter(sex == "male") |> 
+  group_by(species) |> 
+  slice_max(body_mass_g)
+big_males
+
+ggplot(
+  data = filter(penguins, sex == "male"),
+  aes(x = bill_length_mm,
+      y = flipper_length_mm,
+      color = species)) +
+  geom_point(size = 2, alpha = 0.5) +
+  geom_point(
+    data = big_males,
+    size = 4) +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
