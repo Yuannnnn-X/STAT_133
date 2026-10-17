@@ -1,0 +1,85 @@
+---
+title: "2026_03_02"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Joins and Pivots
+
+## Joins
+```{r}
+library(tidyverse)
+```
+
+```{r}
+tbl1 <- tibble(
+  name = c("Harry", "Hermione", "Ron"),
+  gpa = c(3.8, 4.0, 3.0),
+  coffee = c("yes", "no", "yes")
+)
+tbl1
+
+tbl2 <- tibble(
+  name = c("Harry", "Bellatrix", "Hermione", "Draco"),
+  spells = c(60, 75, 70, 55),
+  lunch = c("pizza", "tacos", "burrito", "pad thai")
+)
+tbl2
+```
+
+```{r}
+left_join(tbl1, tbl2, by = "name")
+right_join(tbl1, tbl2, by = "name")
+full_join(tbl1, tbl2, by = "name")
+inner_join(tbl1, tbl2, by = "name")
+semi_join(tbl1, tbl2, by = "name")
+anti_join(tbl1, tbl2, by = "name")
+```
+
+Question: What if the ID columns in x and y have different names?\
+`semi_join(x, y, by = join_by(id1 == id2))`
+
+## Pivots
+```{r}
+gpa1 <- tibble(
+  name = c("Harry", "Hermione", "Ron"),
+  year1 = c(3.7, 3.9, 3.1),
+  year2 = c(3.8, 4, 3)
+)
+gpa1
+
+gpa2 <- pivot_longer(
+  data = gpa1, 
+  cols = c(year1, year2), 
+  names_to = "year", 
+  values_to = "gpa")
+gpa2
+```
+
+```{r}
+gpa1 <- pivot_wider(
+  data = gpa2, 
+  names_from = year, 
+  values_from = gpa)
+gpa1
+```
+
+## Bonus `unite()` and `separate()`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
