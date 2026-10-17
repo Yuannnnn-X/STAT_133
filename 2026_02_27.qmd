@@ -1,0 +1,124 @@
+---
+title: "2026_02_27"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Interactive Graphics
+```{r}
+library(tidyverse)
+library(plotly)
+library(ggiraph)
+library(palmerpenguins)
+penguins
+```
+
+```{r}
+# we can store ggplot objects
+gg <- ggplot(
+  data = drop_na(penguins),
+  mapping = aes(x = bill_length_mm,
+                y = flipper_length_mm,
+                color = species)) +
+  geom_point(size = 2)
+
+gg
+
+class(gg)
+
+names(gg)
+```
+
+```{r}
+# we can add layers to ggplot objects
+gg1 <- gg + theme_minimal()
+
+gg2 <- gg1 + labs(title = "Bill Length and Flipper Length")
+gg2
+```
+
+```{r}
+ggsave(filename = "scatterplot1.png", 
+       plot = gg, 
+       width = 9,
+       height = 7, 
+       units = "in")
+```
+
+## plotly
+```{r}
+gg1 <- ggplot(data = penguins,
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point()
+
+ggplotly(gg1)
+```
+
+! Be careful: Not all ggplot graphical elements translate to plotly
+```{r}
+gg2 <- ggplot(data = penguins,
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point() +
+  labs(title = "Scatter plot", 
+       subtitle = "Palmen Penguins Data")
+
+ggplotly(gg2)
+```
+
+## ggiraph\
+"ggiraph" provides sibling geom functions, e.g.:\
+- geom_point_interactive()\
+- geom_bar_interactive()\
+- geom_col_interactive()\
+- geom_histogram_interactive()\
+- geom_density_interactive()\
+- geom_boxplot_interactive()\
+
+```{r}
+gg3 <- ggplot(data = penguins,
+       mapping = aes(x = bill_length_mm, 
+                     y = flipper_length_mm,
+                     color = species)) +
+  geom_point_interactive(aes(tooltip = sex))
+
+girafe(ggobj = gg3)
+```
+
+```{r}
+gg4 <- ggplot(
+  data = penguins,
+  aes(x = bill_length_mm, 
+      y = flipper_length_mm,
+       color = species,
+      tooltip = sex)) +
+  geom_point_interactive()
+
+ggiraph::girafe(ggobj = gg4)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
