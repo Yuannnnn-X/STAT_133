@@ -1,0 +1,180 @@
+---
+title: "2026_03_04"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# EDA\
+
+```{r}
+library(tidyverse)
+library(plotly)
+```
+
+```{r}
+dat <- read_csv("all-teams-2025-roster.csv")
+head(dat)
+slice_sample(dat, n = 8)
+```
+
+```{r}
+dim(dat)
+dat |> distinct(team) |> pull(team)
+dat |> distinct(team) |> pull(team) |> length()
+dat |> distinct(position) |> pull(position)
+```
+## Univariate Analysis\
+
+### Sanity Check\
+```{r}
+summary(dat$height)
+```
+Note: summary() != summarize()
+
+### Visual Inspection (histogram, density plot, boxplot)
+```{r}
+ggplot(dat, aes(x = height)) +
+  geom_histogram(bins = 30)
+```
+
+```{r}
+ggplot(dat, aes(x = height)) +
+  geom_histogram(binwidth = 1, color = "white")
+
+ggplotly(
+  ggplot(dat, aes(x = height)) +
+  geom_histogram(binwidth = 1, color = "white")
+)
+```
+
+```{r}
+dat |> 
+  slice_min(height) |> 
+  select(player, team, position, height, country)
+
+dat |> 
+  slice_max(height) |> 
+  select(player, team, position, height, country)
+
+dat |> 
+  mutate(height_m = height * 0.0254) |> 
+  summarize(avg_height_in = mean(height),
+            avg_height_m = mean(height_m))
+```
+
+## Bivariate Analysis\
+- height and weight
+- height and position
+- height and team
+
+```{r}
+ggplot(dat, aes(x = height, y = weight)) +
+  geom_point()
+
+ggplot(dat, aes(x = height, y = weight)) +
+  geom_point(color = "green3", alpha = 0.7) +
+  theme_bw()
+
+ggplotly(
+  ggplot(dat, aes(x = height, y = weight, label = player)) +
+    geom_point(color = "green3", alpha = 0.7) +
+    theme_bw()
+)
+```
+
+```{r}
+ggplot(dat, aes(x = height, y = position)) +
+  geom_point()
+
+ggplot(dat, aes(x = height, y = position)) +
+  geom_boxplot()
+
+ggplot(dat, aes(x = height, y = position)) +
+  geom_violin()
+
+dat |> 
+  group_by(position) |> 
+  summarize(
+    min_ht = min(height),
+    avg_ht = mean(height),
+    max_ht = max(height)) |> 
+  arrange(avg_ht)
+
+ggplot(dat, aes(x = height)) +
+  geom_histogram(binwidth = 1, color = "white") +
+  facet_wrap(~ position)
+
+ggplot(dat, aes(x = height)) +
+  geom_histogram(binwidth = 1, color = "white") +
+  facet_wrap(~ position, scales = "free_y")
+
+
+```
+
+```{r}
+ggplot(dat, aes(x = height, y = team)) +
+  geom_point()
+
+ggplot(dat, aes(x = height, y = team, color = team)) +
+  geom_point()
+
+ggplot(dat, aes(x = height, y = team)) +
+  geom_boxplot()
+
+ggplot(dat, aes(x = height)) +
+  geom_histogram(binwidth = 1, color = "white") +
+  facet_wrap(~ team)
+
+ggplot(dat, aes(x = height)) +
+  geom_density() +
+  facet_wrap(~ team)
+```
+
+```{r}
+dat |> 
+  group_by(team) |> 
+  summarize(avg_ht = mean(height)) |> 
+  arrange(desc(avg_ht)) |> 
+  print(n = 30)
+
+dat |> 
+  group_by(team) |> 
+  summarize(avg_ht = mean(height)) |> 
+  ggplot(aes(x = avg_ht, y = team)) +
+  geom_col()
+
+dat |> 
+  group_by(team) |> 
+  summarize(avg_ht = mean(height)) |> 
+  ggplot(aes(x = avg_ht, y = reorder(team, avg_ht))) +
+  geom_col() +
+  labs(x = "average height", y = "")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
