@@ -1,0 +1,95 @@
+---
+title: "2026_03_06"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Explanatory EDA\
+
+```{r}
+library(tidyverse)
+library(plotly)
+```
+
+**Features**:\
+- consumer: the stakeholder\
+- goal: tell a specific story\
+- customized\
+- polished aesthetic\
+
+**Common Questions**:\
+- Who is my audience?\
+- What is the main story?\
+- What is/are the main analytical task(s)?\
+- Can my plot be clearly read?\
+- Is it polished and customized for audience?\
+
+```{r}
+dat <- read_csv("all-teams-2025-roster.csv")
+head(dat)
+```
+
+```{r}
+ggplot(dat, aes(x = height, y = weight)) +
+  geom_point()
+```
+
+```{r}
+ggplot(dat, aes(x = height, y = weight, color = position)) +
+  geom_point()
+
+ggplot(dat, aes(x = height, y = weight, color = position)) +
+  geom_point(alpha = 0.7) +
+  theme_bw()
+
+ggplot(dat, aes(x = height, y = weight, color = position)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, formula = y ~ x) +
+  theme_bw()
+```
+
+```{r}
+ggplot(dat, aes(x = height, y = weight, color = position)) +
+  geom_point(alpha = 0.7) +
+  theme_bw() +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ position)
+
+dat |> 
+  mutate(position = case_when(
+    position == "C" ~ "Center",
+    position == "PF" ~ "Power Forward",
+    position == "PG" ~ "Point Guard",
+    position == "SF" ~ "Small Forward",
+    position == "SG" ~ "Shooting Guard"
+  )) |> 
+ggplot(aes(x = height, y = weight, color = position)) +
+  geom_point(alpha = 0.7) +
+  theme_bw() +
+  geom_smooth(method = "lm", se = FALSE, formula = y ~ x) +
+  facet_wrap(~ position)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
