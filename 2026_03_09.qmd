@@ -1,0 +1,158 @@
+---
+title: "2026_03_09"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Strings I
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+teas <- c("taro", "green", "black", "matcha", "jasmine")
+vehicles <- c("car", "bike", "train", "boat", "airplane")
+fives <- c("5.00", "5100", "5 00", "5-00", "$5.55")
+```
+
+```{r}
+nchar(teas)
+```
+
+```{r}
+paste("pa", "tro", "num", sep = ",")
+paste("pa", "tro", "num", sep = "")
+paste0("pa", "tro", "num")
+```
+
+```{r}
+TEAS <- toupper(teas)
+TEAS
+tolower(TEAS)
+```
+
+Include a quotation in a string by using `'`.
+```{r}
+'Harry pulled out his wand. "Expecto Patronum!" he yelled.'
+```
+
+- " normally starts or ends a string. `\"` is the double-quote character.
+- t normally is the lowercase Latin t. `\t` is a tab space.
+- n normally is the lowercase Latin n. `\n` is a new line.
+- U0001F600 normal is just that. `\U0001F600`
+
+## "stringr"
+str_length(): analog of nchar()\
+str_c(): analog of paste()\
+str_view()\
+str_sub()\
+str_detect()\
+str_split()\
+str_match()\
+str_replace()\
+str_extract()\
+str_remove()\
+
+```{r}
+x <- 'Harry pulled out his wand. "Expecto Patronum!" he yelled.'
+x
+str_view(x)
+```
+
+```{r}
+teas
+str_sub(teas, start = 1, end = 2)
+str_sub(teas, start = 1, end = 3)
+str_sub(teas, start = -3)
+```
+
+```{r}
+str_detect(teas, pattern = "tar")
+str_detect(teas, pattern = "at")
+str_view(teas, pattern = "at")
+```
+
+## regex\
+A literal character is a character that matches itself.\
+A metacharacter is a character that does NOT match itself.\
+
+```{r}
+vehicles
+str_view(vehicles, pattern = "a")
+str_view(vehicles, pattern = "air")
+```
+
+```{r}
+fives
+str_view(fives, pattern = ".")
+str_view(fives, pattern = "5.")
+str_view(fives, pattern = ".0")
+```
+
+```{r}
+str_view(fives, pattern = "5\\.")
+```
+
+```{r}
+# Match single occurrence of either “a” or “o”.
+str_view(vehicles, pattern = "[ao]")
+str_view(vehicles, pattern = "[car]")
+```
+
+```{r}
+str_view(fives, pattern = "[0-9]")
+str_view(fives, pattern = "[0-9][0-9]")
+str_view(fives, pattern = "[0-9][0-9][0-9]")
+```
+
+```{r}
+txt <- c("5\t00", "car", "Bike", "TARO 5.00")
+str_view(txt, pattern = "[[:digit:]]")
+str_view(txt, pattern = "[[:space:]]")
+str_view(txt, pattern = "[[:upper:]]")
+```
+
+```{r}
+txt <- c("5\t00", "car", "Bike", "TARO 5.00")
+str_view(txt, pattern = "[[:alnum:]]")
+str_view(txt, pattern = "[[:punct:]]")
+str_view(txt, pattern = "[[:alpha:]]")
+```
+
+```{r}
+fives
+str_view(fives, pattern = "\\d")
+str_view(fives, pattern = "\\d\\d")
+```
+
+```{r}
+fives
+str_view(fives, pattern = "\\s")
+str_view(fives, pattern = "\\S")
+```
+
+```{r}
+fives
+str_view(fives, pattern = "\\w")
+str_view(fives, pattern = "\\W")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
