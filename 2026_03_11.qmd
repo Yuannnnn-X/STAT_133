@@ -1,0 +1,116 @@
+---
+title: "2026_03_11"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Strings II
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+teas <- c("taro", "green", "black", "matcha", "jasmine")
+vehicles <- c("car", "bike", "train", "boat", "airplane")
+fives <- c("5.00", "5100", "5 00", "5-00", "$5.55")
+```
+
+```{r}
+sw <- c(
+  "LEIA is a 1.50 meters tall Female",
+  "LUKE is a 1.70 meters tall Male",
+  "HAN is a 1.80 meters tall Male"
+)
+```
+
+```{r}
+str_view(sw, pattern = "[A-Z]")
+```
+
+`^a`: starts with “a”\
+`a$`: ends with “a”\
+
+```{r}
+str_view(vehicles, pattern = "^[aeiou]")
+str_view(teas, pattern = "[aeiou]$")
+
+# end in not a vowel
+str_view(teas, pattern = "[^aeiou]$")
+```
+
+```{r}
+# first character
+str_view(vehicles, pattern = "^.")
+```
+
+```{r}
+# last character
+str_view(vehicles, pattern = ".$")
+```
+
+![](Quantifier.png)
+
+```{r}
+abc <- c("a", "aab", "aaabbc", "bcc")
+
+# any number of "a"
+str_extract(abc, pattern = "a*")
+
+# at least one "a"
+str_extract(abc, pattern = "a+")
+
+# optional "a"
+str_extract(abc, pattern = "a?")
+
+# 2 consecutive "a"
+str_extract(abc, pattern = "a{2}")
+
+# 1 or 2 "a"
+str_extract(abc, pattern = "a{1,2}")
+
+# 3 or more "a"
+str_extract(abc, pattern = "a{3,}")
+
+# at most 3 "a"
+str_extract(abc, pattern = "a{0,3}")
+```
+
+## Grouping and Alternation\
+\
+You can change the scope of different operations by grouping characters with `()`
+
+```{r}
+x <- c("hah", "hahaha", "haaa")
+
+str_view(x, pattern = "ha+")
+str_view(x, pattern = "(ha)+")
+```
+
+You can separate different possible patterns with `|` (reads like “or”)\
+\
+```{r}
+str_view(vehicles, "in|ir")
+str_view(vehicles, "ar|an")
+str_view(vehicles, "a(r|n|t)")
+```
+
+```{r}
+p <- "Yaaaay"
+p <- "Ya+y"
+p <- "Ya{4}y"
+p <- "Ya*y"
+
+str_view('Hermione said, "Yaaaay", and hugged Ron', pattern = p)
+```
+
+
+
+
+
+
+
