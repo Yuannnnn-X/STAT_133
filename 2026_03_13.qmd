@@ -1,0 +1,99 @@
+---
+title: "2026_03_13"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Strings III
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+```{r}
+url <- "https://en.wikipedia.org/wiki/Men%27s_long_jump_world_record_progression"
+
+# import HTML file
+doc <- read_html(url)
+
+# extract 2nd HTML table (as data.frame/tibble)
+dat <- html_table(doc)[[2]]
+dat
+```
+
+## Look arounds
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
