@@ -1,0 +1,137 @@
+---
+title: "2026_03_18"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Dates and Times II
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+```{r}
+a <- today()
+b <- ymd("1941-09-27")
+class(a)
+
+class(b)
+
+a - b
+```
+
+```{r}
+class(a - b)
+
+oski_age_sec <- as.duration(a - b)
+class(oski_age_sec)
+
+oski_age_sec
+```
+
+## Constructing a duration\
+
+You can make a `duration` by coercing a `Date` object or using a constructor function.
+
+```{r}
+dseconds(15)
+dminutes(10)
+dhours(c(12, 24))
+ddays(0:3)
+dweeks(3)
+dyears(1)
+```
+
+```{r}
+one_am <- ymd_hms("2026-03-08 01:00:00", tz = "America/Los_Angeles")
+one_am
+one_am + ddays(1)
+```
+
+## Periods\
+
+In `"lubridate"`, a `period` is like a `duration` except it doesn’t have a fixed length in seconds. It tracks human units (day, week) that are responsive to irregularities.
+
+```{r}
+seconds(15)
+minutes(10)
+hours(c(12, 24))
+days(0:3)
+weeks(3)
+years(1)
+```
+
+```{r}
+one_am
+one_am + days(1)
+
+ymd("2024-01-01") + dyears(1)
+ymd("2024-01-01") + years(1) # accounts for leap year
+```
+
+```{r}
+oski_age_sec + dyears(1) # adding average seconds in a year
+as.period(oski_age_sec)
+as.period(oski_age_sec) + years(1)
+```
+
+## Intervals\
+
+An interval is a time span that is tied to two specific, real date-time points: a start date and an end date\
+\
+Unlike lubridate’s other time span classes (durations and periods), an interval retains complete information about when exactly it occurs on the timeline.
+
+```{r}
+# Oski's debute
+date1 <- ymd("1941-09-27")
+
+# present's date
+date2 <- ymd("2026-03-18")
+
+# interval
+interval(date1, date2)
+
+# length of the interval in seconds
+int_length(interval(date1, date2))
+```
+
+# Time Zones\
+
+```{r}
+Sys.timezone() # What R says my timezone is
+
+# names of Time Zones
+OlsonNames()
+```
+
+```{r}
+x1 <- ymd_hms("2024-06-01 12:00:00", tz = "America/New_York")
+x1
+
+force_tz(x1, tzone = "Asia/Tokyo")
+
+with_tz(x1, tzone = "Asia/Tokyo")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
