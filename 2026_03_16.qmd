@@ -1,0 +1,110 @@
+---
+title: "2026_03_16"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Dates and Times I
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+now <- Sys.time()
+now
+
+class(now)
+
+typeof(now)
+
+# unix time (when rendering slides)
+unclass(now)
+```
+
+```{r}
+# it prints as a legible string
+now
+
+# while respecting arithmetic
+now + 1
+
+# and other sensible operations
+round(now)
+
+# and makes it easy to use other formats
+format(now, "%m/%d/%y")
+```
+
+```{r}
+as.POSIXct(x = 60, tz = "UTC")
+
+as.POSIXct(x = "1970-01-01 00:01:00", tz = "UTC")
+
+as.POSIXct(x = "Jan 1, 1970 12:01 am", 
+           format = "%b %d, %Y %I:%M %p",  
+           tz = "UTC")
+```
+
+```{r}
+halloween <- as.Date("2000-10-31")
+
+class(halloween)
+
+typeof(halloween)
+
+halloween
+```
+
+```{r}
+as.Date("03-16-2026", format = "%m-%d-%Y")
+
+as.Date("2026-March-16", format = "%Y-%B-%d")
+
+as.Date("2026-Mar-16", format = "%Y-%b-%d")
+```
+
+```{r}
+mdy_hm("Jan 1, 1970 12:01 am")
+
+dmy_hm("1-1-1970 12:01")
+
+x <- dmy_hm("1-1-1970 12:01")
+class(x)
+```
+
+```{r}
+year(now)
+
+day(now)
+
+wday(now)
+
+wday(now, label = TRUE)
+```
+
+```{r}
+year(now) <- 2025
+now
+
+wday(now, label = TRUE, abbr = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
