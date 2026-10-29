@@ -1,0 +1,50 @@
+---
+title: "Old Faithful"
+author: "Yuan Xie"
+format: dashboard
+server: shiny
+embed-resources: true
+---
+
+```{r}
+#| context: setup
+library(tidyverse)
+library(shiny)
+```
+
+## {.sidebar}
+
+```{r}
+sliderInput(
+  inputId = 'bins',
+  label = 'Number of bins',
+  min = 1,
+  max = 50,
+  value = 30)
+```
+
+## Row
+
+```{r}
+plotOutput(outputId = 'plot')
+```
+
+```{r}
+#| context: server
+output$plot <- renderPlot({
+  ggplot(data = faithful, aes(x = waiting)) +
+    geom_histogram(bins = input$bins, color ="white") +
+    theme_minimal()
+})
+```
+
+
+
+
+
+
+
+
+
+
+
