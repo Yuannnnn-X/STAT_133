@@ -1,0 +1,133 @@
+---
+title: "Old Faithful"
+author: "Yuan Xie"
+format: dashboard
+server: shiny
+embed-resources: true
+---
+
+```{r}
+#| context: setup
+library(tidyverse)
+library(palmerpenguins)
+library(shiny)
+```
+
+## {.sidebar}
+
+```{r}
+sliderInput(
+  inputId = 'mass', 
+  label = 'Body mass (grams)',
+  min = min(penguins$body_mass_g, na.rm = TRUE),
+  max = max(penguins$body_mass_g, na.rm = TRUE),
+  value = c(3000, 4500))
+```
+
+```{r}
+radioButtons(
+  inputId = "graphic", 
+  label = "Type of graphic:",
+  choices = c("density", "boxplot"),
+  selected = "density")
+```
+
+
+## Row
+
+```{r}
+#| title: "Bill Depth"
+plotOutput(outputId = 'plot')
+```
+
+```{r}
+#| title: "Stats"
+tableOutput(outputId = 'table')
+```
+
+
+```{r}
+#| context: server
+
+# plot
+output$plot <- renderPlot({
+  gg <- penguins |> 
+    filter(body_mass_g >= input$mass[1],
+           body_mass_g <= input$mass[2]) |>
+    ggplot(aes(x = bill_depth_mm, 
+               fill = species)) +
+    theme_minimal()
+
+  if (input$graphic == "density") {
+    gg + geom_density(alpha = 0.7)
+  } else {
+    gg + geom_boxplot(aes(y = species))
+  }
+})
+
+
+# summary statistics
+output$table <- renderTable({
+  penguins |> 
+    filter(body_mass_g >= input$mass[1],
+           body_mass_g <= input$mass[2]) |>
+    group_by(species) |> 
+    summarize(
+      median = median(bill_depth_mm),
+      IQR = IQR(bill_depth_mm),
+      mean = mean(bill_depth_mm),
+      sd = sd(bill_depth_mm))
+})
+
+# reactive object
+penguins_filtered <- reactive({
+  penguins |> 
+    filter(body_mass_g >= input$mass[1],
+           body_mass_g <= input$mass[2])
+})
+
+output$plot <- renderPlot({
+  gg = ggplot(data = penguins_filtered(), 
+         aes(x = bill_depth_mm, fill = species)) +
+    theme_minimal()
+  
+  if (input$graphic == "density") {
+    gg + geom_density(alpha = 0.7)
+  } else {
+    gg + geom_boxplot(aes(y = species))
+  }
+})
+
+# reactive object
+penguins_filtered <- reactive({
+  penguins |> 
+    filter(body_mass_g >= input$mass[1],
+           body_mass_g <= input$mass[2])
+})
+
+output$plot <- renderPlot({
+  ...
+})
+
+output$table <- renderTable({
+  penguins_filtered() |> 
+    group_by(species) |> 
+    summarize(
+      median = median(bill_depth_mm),
+      IQR = IQR(bill_depth_mm),
+      mean = mean(bill_depth_mm),
+      sd = sd(bill_depth_mm)
+    )
+})
+```
+
+
+
+
+
+
+
+
+
+
+
