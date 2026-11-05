@@ -1,0 +1,221 @@
+---
+title: "Storms in North Atlantic I"
+author: "Yuan Xie"
+format: html
+embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+head(storms)
+```
+
+```{r}
+storms |> 
+  filter(year == 1975)
+```
+
+```{r}
+storms |> 
+  filter(year == 1975) |> 
+  ggplot(aes(x = long, y = lat)) +
+  geom_point()
+
+storms |> 
+  filter(year == 1975) |> 
+  ggplot(aes(x = long, y = lat, color = name)) +
+  geom_point()
+
+storms |> 
+  filter(year == 1975) |> 
+  ggplot(aes(x = long, y = lat, color = name)) +
+  geom_point() +
+  geom_path()
+```
+
+# Maps of Vector Data in R
+```{r}
+library(tidyverse)      # includes ggplot2
+library(sf)             # simple features (vector objects)
+library(rnaturalearth)  # World Map Data
+library(rnaturalearthdata)
+```
+
+`"sf"`: Simple Features package (for handling vector data in a tidy way)\
+`"rnaturalearth"`: package that provides World Map data (i.e. vector data sets).\
+
+```{r}
+# world map data ("sf" object)
+world1 <- ne_coastline(returnclass = "sf")
+
+ggplot(data = world1) +
+  geom_sf()
+```
+
+```{r}
+class(world1)
+dim(world1)
+head(world1)
+names(world1)
+```
+
+```{r}
+world1$geometry
+```
+
+```{r}
+world2 <- ne_countries(returnclass = "sf")
+ggplot(data = world2) +
+  geom_sf()
+```
+
+```{r}
+class(world2)
+dim(world2)
+names(world2)
+```
+
+```{r}
+# map of world
+world2 <- ne_countries(returnclass = "sf")
+
+ggplot(data = world2) +
+  geom_sf()
+
+# scatter plot of storm tracks
+storms75 <- filter(storms, year == 1975)
+
+ggplot(storms75, aes(x = long, y = lat, color = name)) +
+  geom_point() +
+  geom_path() +
+  labs(title = "North Atlantic Storms (1975)")
+
+ggplot() +
+  geom_sf(data = world2) +
+  geom_point(data = storms75, 
+             aes(x = long, y = lat, color = name)) +
+  geom_path(data = storms75, 
+            aes(x = long, y = lat, color = name))
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = world2) +
+  coord_sf(xlim = c(-110, -30), ylim = c(5, 65)) +
+  geom_point(data = storms75, 
+             aes(x = long, y = lat, color = name)) +
+  geom_path(data = storms75, 
+            aes(x = long, y = lat, color = name))
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = world2) +
+  coord_sf(xlim = c(-110, -30), ylim = c(5, 65)) +
+  geom_point(data = storms75, 
+             aes(x = long, y = lat, color = name)) +
+  geom_path(data = storms75, 
+            aes(x = long, y = lat, color = name)) +
+  theme(panel.background = element_blank()) + 
+  labs(title = "North Atlantic Storms (1975)")
+```
+
+## Change Projection
+```{r}
+world2 <- ne_countries(returnclass = "sf")
+
+ggplot(data = world2) +
+  geom_sf() +
+  coord_sf(crs = 4326)
+
+ggplot(data = world2) +
+  geom_sf() +
+  coord_sf(crs = "+proj=moll")
+
+# Equal Area Cylindrical
+ggplot(data = world2) +
+  geom_sf() +
+  coord_sf(crs = "+proj=cea")
+
+# Eckert I
+ggplot(data = world2) +
+  geom_sf() +
+  coord_sf(crs = "+proj=eck1")
+
+# Orthographic
+ggplot(data = world2) +
+  geom_sf() +
+  coord_sf(crs = "+proj=ortho")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
