@@ -1,0 +1,179 @@
+---
+title: "Colored Thematic Maps"
+author: "Yuan Xie"
+format: html
+theme: darkly
+embed-resources: true
+---
+
+```{r}
+# packages
+library(tidyverse)     # ecosystem of data science packages
+library(rvest)         # for web scraping
+library(sf)            # "simple features" (classes for maps)
+library(usmap)         # map of US states (with Alaska & Hawaii)
+library(RColorBrewer)  # Brewer color palettes
+library(ggiraph)       # make ggplots interactive
+```
+
+```{r}
+# run this command in the console
+# (saves html file in your working directory)
+download.file(
+  url = "https://www.sofi.com/learn/content/average-salary-in-us/", 
+  destfile = "sofi-average-salary-in-us-2025.html")
+```
+
+```{r}
+tbls = read_html("sofi-average-salary-in-us-2025.html") |>
+  html_table()
+
+salaries = tbls[[1]]
+head(salaries)
+```
+
+```{r}
+# data with average and median salaries
+salaries = salaries |>
+  mutate(Average = as.numeric(str_remove_all(Average, "[,$]")),
+         Median = as.numeric(str_remove_all(Median, "[,$]")))
+
+head(salaries)
+```
+
+```{r}
+# from package "usmap"
+us_states = us_map(regions = "states")
+
+class(us_states)
+
+names(us_states)
+
+head(us_states, n = 5)
+```
+
+```{r}
+ggplot(data = us_states) +
+  geom_sf()
+
+ggplot(data = us_states) +
+  geom_sf() +
+  geom_sf_text(aes(label = abbr))
+
+ggplot(data = us_states) +
+  geom_sf() +
+  geom_sf_text(aes(label = abbr)) +
+  theme_void()
+```
+
+# Choropleth Map
+```{r}
+# inner join
+joined_inner = inner_join(
+    x = us_states, 
+    y = salaries, 
+    by = c("full" = "State"))
+
+head(joined_inner)
+```
+
+```{r}
+joined_inner |>
+  ggplot() +
+  geom_sf(aes(fill = Average), color = "white") +
+  theme_void()
+```
+
+```{r}
+joined_inner |>
+  ggplot() +
+  geom_sf(aes(fill = Average), color = "white") +
+  scale_fill_gradient(low = "#1b4bab", high = "#d7e1f5") +
+  theme_void()
+```
+
+```{r}
+joined_inner |>
+  ggplot() +
+  geom_sf(aes(fill = Average), color = "white") +
+  scale_fill_gradientn(colors = brewer.pal(n = 7, name = "Purples"), 
+                       breaks = seq(45000, 80000, by = 5000)) +
+  theme_void()
+```
+
+## Interactive Map
+```{r}
+gmap = joined_inner |>
+  mutate(Label = paste0(full, ": ", Average)) |>
+  ggplot(aes(fill = Average,
+             tooltip = Label)) +
+  geom_sf_interactive(color = "white") +
+  scale_fill_gradientn(colors = brewer.pal(n = 7, name = "Purples"), 
+                       breaks = seq(45000, 80000, by = 5000)) +
+  theme_void()
+
+girafe(ggobj = gmap)
+```
+
+```{r}
+# adding interactivity with "ggiraph" functions
+gmap = joined_inner |>
+  mutate(Label = paste0(full, ": ", Average)) |>
+  ggplot(aes(fill = Average,
+             tooltip = Label)) +
+  geom_sf_interactive(color = "white") +
+  scale_fill_viridis_c(direction = -1) +
+  theme_void()
+
+girafe(ggobj = gmap)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
