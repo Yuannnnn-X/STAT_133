@@ -1,0 +1,136 @@
+---
+title: "Maps of Raster Data"
+author: "Yuan Xie"
+format: html
+theme: darkly
+embed-resources: true
+---
+
+```{r}
+# packages
+library(tidyverse)     # ecosystem of data science packages
+
+library(terra)         # for spatial data in raster and vector form
+
+library(viridis)       # colorblind-friendly color schemes
+
+library(rnaturalearth) # maps data from www.naturalearthdata.com
+```
+
+Rasters are spatial data models that define space as an array of equally sized cells, and composed of single or multiple bands.
+
+The "terra" package provides methods for spatial data analysis with vector (points, lines, polygons) and raster (grid) data.
+
+```{r}
+dat <- rast("nclimgrid_tavg.nc")
+dat
+```
+
+```{r}
+dat[[1]]
+dat[[1564]]
+```
+
+```{r}
+plot(dat[[1564]])
+plot(dat[[1564]], col = viridis(n = 100))
+plot(dat[[1564]], col = magma(n = 100))
+plot(dat[[1564]], col = plasma(n = 100))
+plot(dat[[1564]], col = inferno(n = 100))
+plot(dat[[1564]], col = viridis(n = 6))
+```
+
+```{r}
+# Converting temp to Fahrenheit
+
+plot(dat[[1564]] * (9/5) + 32)
+```
+
+```{r}
+apr_2025 = as.data.frame(dat[[1564]], xy = TRUE)
+
+head(apr_2025)
+```
+
+```{r}
+ggplot() +
+  geom_tile(data = apr_2025, aes(x = x, y = y, fill = tavg_1564))
+
+ggplot() +
+  geom_tile(data = apr_2025, aes(x = x, y = y, fill = tavg_1564)) +
+  scale_fill_viridis_c()
+```
+
+```{r}
+us_states = ne_states(
+  country = "United States of America", 
+  returnclass = "sf")
+
+ggplot() +
+  geom_sf(data = us_states) +
+  coord_sf(xlim = c(-124.7083, -67), ylim = c(24.5417, 49.37503))
+
+ggplot() +
+  geom_tile(data = apr_2025, aes(x = x, y = y, fill = tavg_1564)) +
+  geom_sf(data = us_states, fill = "#FFFFFF00", color = "white") +
+  coord_sf(xlim = c(-124.7083, -67), ylim = c(24.5417, 49.37503))
+
+# Superimposing polygons to temperatures
+ggplot() +
+  geom_tile(data = apr_2025, aes(x = x, y = y, fill = tavg_1564)) +
+  geom_sf(data = us_states, fill = "#FFFFFF00", color = "white") +
+  coord_sf(xlim = c(-124.7083, -67), ylim = c(24.5417, 49.37503))
+
+# color gradient: binned viridis (discrete)
+ggplot() +
+  geom_tile(data = apr_2025, aes(x = x, y = y, fill = tavg_1564)) + 
+  scale_fill_viridis_b(breaks = seq(from = -10, to = 25, by = 5)) +
+  geom_sf(data = us_states, fill = "#FFFFFF00", color = "white") +
+  coord_sf(xlim = c(-124.7083, -67), ylim = c(24.5417, 49.37503))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
