@@ -1,0 +1,46 @@
+---
+title: "LLM"
+author: "Yuan Xie"
+format: 
+    html:
+        fontsize: 1.1em
+        theme: darkly
+embed-resources: true
+---
+
+# Interactive Graphics
+```{r}
+library(tidyverse)
+library(ellmer)
+```
+
+```{r}
+local_llm <- chat_ollama(
+  model = "qwen3:4b"
+)
+
+local_llm$chat(
+  "The capital of France is"
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
