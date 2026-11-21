@@ -1,0 +1,121 @@
+---
+title: "JSON Data and APIs"
+author: "Yuan Xie"
+format: html
+theme: darkly
+embed-resources: true
+---
+
+```{r}
+# packages
+library(tidyverse)     # ecosystem of data science packages
+library(jsonlite)
+```
+
+```{r}
+json1 <- '[1, 2, 3, 4, 5]'
+
+r1 <- fromJSON(json1)
+r1
+
+```
+
+```{r}
+json2 <- '[true, true, false]'
+
+r2 <- fromJSON(json2)
+r2
+```
+
+```{r}
+json3 <- '{"name": "Leia", "gender": "female", "height": 1.6, "force": true}'
+
+fromJSON(json3)
+```
+
+```{r}
+json4 <- '{
+  "name": ["Leia", "Luke", "Han"],
+  "gender": ["female", "male", "male"],
+  "height": [1.6, 1.7, 1.8],
+  "force": [true, true, false]
+}'
+
+fromJSON(json4)
+```
+
+```{r}
+json4 <- fromJSON('{
+  "name": ["Leia", "Luke", "Han"],
+  "gender": ["female", "male", "male"],
+  "height": [1.6, 1.7, 1.8],
+  "force": [true, true, false]
+}')
+
+as.data.frame(json4)
+```
+
+```{r}
+json5 <- '[
+  {"name": "Leia", "gender": "female", "height": 1.6, "force": true},
+  {"name": "Luke", "gender": "male", "height": 1.7, "force": true},
+  {"name": "Han", "gender": "male", "height": 1.8, "force": false}
+]'
+
+fromJSON(json5)
+```
+
+```{r}
+leia_lst <- list(
+  "name" = "Leia", 
+  "gender" = "female", 
+  "height" = 1.50, 
+  "force" = TRUE)
+
+toJSON(leia_lst)
+```
+
+```{r}
+leia_lst <- list(
+  "name" = "Leia", 
+  "gender" = "female", 
+  "height" = 1.50, 
+  "force" = TRUE)
+
+toJSON(leia_lst, auto_unbox = TRUE, pretty = TRUE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
