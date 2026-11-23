@@ -1,0 +1,115 @@
+---
+title: "Text Analysis III"
+author: "Yuan Xie"
+format: html
+theme: darkly
+embed-resources: true
+---
+
+```{r}
+# packages
+library(tidyverse)     # ecosystem of data science packages
+
+library(tidytext)      # text mining using tidy tools
+
+library(textdata)      # various text datasets
+
+library(janeaustenr)   # full texts for Jane Austen's 6 completed novels
+
+library(plotly)        # web interactive plots
+```
+
+```{r}
+bing |> slice_head(n = 8)
+afinn |> slice_head(n = 8)
+loughran |> slice_head(n = 8)
+nrc |> slice_head(n = 8)
+```
+
+```{r}
+pride_tbl = tibble(text = prideprejudice)
+pride_tokens = unnest_tokens(pride_tbl, input=text, output=word)
+pride_sentim = inner_join(pride_tokens, sentiments, by = "word")
+
+pride_sentim
+```
+
+```{r}
+pride_sentim |> 
+  count(word, sentiment, name = "count", sort = TRUE) |> 
+  slice_head(n = 20) |> 
+  ggplot(aes(x = count, y = reorder(word, count), fill = sentiment)) +
+  geom_col()
+```
+
+```{r}
+pride_tbl = tibble(text = prideprejudice)
+
+# example: divide text into sections of 80 lines
+pride_tbl |> 
+  filter(!str_detect(text, "^Chapter\\s\\d+"),
+         text != "") |> 
+  mutate(line_number = row_number(),
+         section = line_number %/% 80) |> 
+  unnest_tokens(input = text, output = word) |> 
+  inner_join(sentiments, by = "word") |> 
+  count(section, sentiment) |> 
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) |>
+  mutate(score = positive - negative)
+```
+
+```{r}
+section_scores = pride_tbl |> 
+  filter(!str_detect(text, "^Chapter\\s\\d+"),
+         text != "") |> 
+  mutate(line_number = row_number(),
+         section = line_number %/% 80) |> 
+  unnest_tokens(input = text, output = word) |> 
+  inner_join(sentiments, by = "word") |> 
+  count(section, sentiment) |> 
+  pivot_wider(names_from = sentiment, 
+              values_from = n, 
+              values_fill = 0) |>
+  mutate(score = positive - negative)
+```
+
+```{r}
+section_scores |> 
+  ggplot(aes(x = section, y = score, fill = score)) +
+  geom_col() +
+  scale_fill_viridis_c() +
+  theme_bw() +
+  labs(title = "Narrative arc of Pride and Prejudice",
+       subtitle = "Each section involves 80 lines of text")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
